@@ -1,0 +1,2231 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Criticism — Qena University</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d18;--surface:#12152a;--surface2:#181c30;--card:#1e2238;
+  --glass:rgba(255,255,255,0.04);--gb:rgba(255,255,255,0.08);
+  --acc:#f0c060;--acc2:#7eb8f7;--acc3:#a78bfa;--acc4:#34d399;--acc5:#f87171;
+  --text:#e8eaf2;--muted:#8892a8;--dim:#4a5268;
+  --sw:290px;--r:14px;--sh:0 8px 40px rgba(0,0,0,0.6);
+  --hl-bg:rgba(240,192,96,0.15);--hl-border:rgba(240,192,96,0.5);
+}
+[data-theme=light]{
+  --bg:#f5f0e8;--surface:#fdfaf4;--surface2:#ede8dc;--card:#fff;
+  --glass:rgba(0,0,0,0.03);--gb:rgba(0,0,0,0.08);
+  --acc:#b8860b;--acc2:#1a5fa0;--acc3:#6d28d9;--acc4:#059669;--acc5:#dc2626;
+  --text:#1a1e2e;--muted:#5a6478;--dim:#9aa0b4;--sh:0 8px 40px rgba(0,0,0,0.1);
+  --hl-bg:rgba(255,230,50,0.3);--hl-border:rgba(200,160,0,0.55);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.7}
+
+/* PARTICLES */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.pt{position:absolute;border-radius:50%;animation:drift linear infinite;opacity:0}
+@keyframes drift{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.3}90%{opacity:.1}100%{opacity:0;transform:translateY(-100px) scale(1.2)}}
+
+/* SIDEBAR */
+#sidebar{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--surface);border-right:1px solid var(--gb);z-index:100;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden}
+#sidebar.collapsed{transform:translateX(calc(-1 * var(--sw)))}
+.sb-logo{padding:24px 20px 16px;border-bottom:1px solid var(--gb)}
+.sb-logo h2{font-family:'Playfair Display',serif;font-size:1rem;color:var(--acc);line-height:1.3}
+.sb-logo p{font-size:.7rem;color:var(--muted);margin-top:3px}
+.sb-search{padding:12px 14px;border-bottom:1px solid var(--gb);position:relative}
+.sb-search input{width:100%;background:var(--card);border:1px solid var(--gb);border-radius:8px;padding:8px 12px;color:var(--text);font-size:.8rem;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .2s}
+.sb-search input:focus{border-color:var(--acc)}
+.sb-nav{flex:1;overflow-y:auto;padding:8px 0;scrollbar-width:thin;scrollbar-color:var(--dim) transparent}
+.sb-nav::-webkit-scrollbar{width:3px}
+.sb-nav::-webkit-scrollbar-thumb{background:var(--dim);border-radius:4px}
+.nav-group-label{font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:10px 18px 3px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 18px;cursor:pointer;font-size:.81rem;color:var(--muted);transition:all .18s;border-left:2px solid transparent;text-decoration:none}
+.nav-item:hover{color:var(--text);background:var(--glass);border-left-color:var(--acc2)}
+.nav-item.active{color:var(--acc);background:var(--glass);border-left-color:var(--acc);font-weight:500}
+.nav-icon{font-size:.95rem;flex-shrink:0;width:18px;text-align:center}
+.sb-footer{padding:14px;border-top:1px solid var(--gb)}
+.xp-bar-wrap{background:var(--card);border-radius:4px;height:5px;overflow:hidden;margin-bottom:5px}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc3));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.xp-label{font-size:.68rem;color:var(--muted);display:flex;justify-content:space-between}
+
+/* TOPBAR */
+#topbar{position:fixed;top:0;left:var(--sw);right:0;height:58px;background:var(--surface);border-bottom:1px solid var(--gb);display:flex;align-items:center;gap:10px;padding:0 20px;z-index:90;transition:left .35s}
+#topbar.full{left:0}
+#toggle-sidebar{background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--muted);padding:6px;border-radius:8px;transition:color .2s}
+#toggle-sidebar:hover{color:var(--acc)}
+.topbar-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--text);flex:1}
+.topbar-actions{display:flex;gap:7px;align-items:center}
+.btn-icon{background:var(--card);border:1px solid var(--gb);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.78rem;color:var(--muted);transition:all .18s;font-family:'DM Sans',sans-serif}
+.btn-icon:hover{color:var(--acc);border-color:var(--acc)}
+.xp-chip{background:linear-gradient(135deg,var(--acc),var(--acc3));color:#000;font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.04em}
+
+/* SCROLL PROGRESS */
+#scroll-ind{position:fixed;top:58px;left:0;height:2px;background:linear-gradient(90deg,var(--acc),var(--acc3),var(--acc2));width:0%;z-index:200;transition:width .1s}
+
+/* MAIN */
+#main{margin-left:var(--sw);padding-top:58px;min-height:100vh;transition:margin-left .35s;position:relative;z-index:1}
+#main.full{margin-left:0}
+.section{padding:44px 44px 60px;max-width:980px;display:none;animation:fadeUp .4s ease}
+.section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ HIGHLIGHTED TEXT (core educational material) ══ */
+.hl-box{
+  background:var(--hl-bg);
+  border:1px solid var(--hl-border);
+  border-left:3px solid var(--acc);
+  border-radius:10px;
+  padding:14px 18px;
+  margin:12px 0;
+  position:relative;
+  transition:transform .2s,box-shadow .2s;
+  cursor:default;
+}
+.hl-box::before{
+  content:'✏️';
+  position:absolute;
+  top:-10px;right:12px;
+  background:var(--acc);
+  color:#000;
+  font-size:.6rem;
+  padding:2px 6px;
+  border-radius:10px;
+  font-weight:700;
+  letter-spacing:.05em;
+}
+.hl-box:hover{transform:translateX(3px);box-shadow:var(--sh)}
+.hl-box .hl-text{font-size:.91rem;line-height:1.78;color:var(--text)}
+.hl-box .hl-label{display:inline-block;font-size:.62rem;background:rgba(240,192,96,.2);color:var(--acc);border-radius:4px;padding:2px 7px;margin-bottom:7px;font-weight:700;letter-spacing:.07em}
+/* Animated highlight pulse on load */
+@keyframes hlPulse{0%,100%{background:var(--hl-bg)}50%{background:rgba(240,192,96,0.28)}}
+.hl-box.pulse{animation:hlPulse 1.2s ease 2}
+
+/* HERO */
+.hero{text-align:center;padding:56px 36px 72px;background:radial-gradient(ellipse at 50% 30%,rgba(240,192,96,.06) 0%,transparent 70%)}
+.hero-tag{display:inline-block;background:var(--glass);border:1px solid var(--gb);border-radius:30px;padding:5px 16px;font-size:.7rem;color:var(--acc);letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,5vw,3.1rem);font-weight:900;line-height:1.15;margin-bottom:14px;background:linear-gradient(135deg,var(--text) 40%,var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--muted);max-width:540px;margin:0 auto 28px;font-size:.93rem}
+.hero-stats{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.stat-card{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:14px 20px;text-align:center;min-width:100px;transition:transform .2s,box-shadow .2s;cursor:default}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.stat-card .num{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--acc);font-weight:700}
+.stat-card .lbl{font-size:.68rem;color:var(--muted);margin-top:1px}
+
+/* SECTION HEADERS */
+.section-header{margin-bottom:32px}
+.section-tag{font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);font-weight:600;margin-bottom:7px}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.1rem);font-weight:700;line-height:1.2}
+.section-title span{color:var(--acc)}
+.section-sub{color:var(--muted);margin-top:9px;font-size:.91rem;max-width:600px}
+.divider{height:1px;background:linear-gradient(90deg,var(--acc) 0%,transparent 100%);margin:28px 0;opacity:.25}
+
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin:20px 0}
+.card{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:20px;transition:all .22s;cursor:default;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-accent,linear-gradient(90deg,var(--acc),var(--acc3)))}
+.card:hover{transform:translateY(-4px);box-shadow:var(--sh);border-color:rgba(240,192,96,.3)}
+.card-icon{font-size:1.7rem;margin-bottom:10px}
+.card h3{font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:7px;color:var(--text)}
+.card p{font-size:.81rem;color:var(--muted);line-height:1.65}
+.card .card-tag{display:inline-block;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--glass);border:1px solid var(--gb);border-radius:4px;padding:2px 7px;color:var(--acc2);margin-top:10px}
+
+/* ACCORDION */
+.accordion{border:1px solid var(--gb);border-radius:var(--r);overflow:hidden;margin:14px 0}
+.acc-item{border-bottom:1px solid var(--gb)}
+.acc-item:last-child{border-bottom:none}
+.acc-trigger{width:100%;background:none;border:none;padding:16px 20px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.91rem;font-weight:500;transition:background .18s}
+.acc-trigger:hover{background:var(--glass)}
+.acc-trigger .acc-icon{font-size:.78rem;transition:transform .25s;color:var(--acc)}
+.acc-trigger.open .acc-icon{transform:rotate(180deg)}
+.acc-body{display:none;padding:0 20px 18px;font-size:.86rem;color:var(--muted);line-height:1.75}
+.acc-body.open{display:block;animation:fadeDown .2s ease}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ INTERACTIVE PYRAMID ══ */
+.pyramid-interactive{margin:30px 0}
+.pyramid-svg-wrap{position:relative;max-width:560px;margin:0 auto 24px}
+.pyramid-svg-wrap svg{width:100%;height:auto}
+.pyr-stage{cursor:pointer;transition:opacity .2s;opacity:.85}
+.pyr-stage:hover{opacity:1}
+.pyr-stage.active-stage{opacity:1;filter:drop-shadow(0 0 12px rgba(240,192,96,.6))}
+.pyr-label-text{font-family:'DM Sans',sans-serif;font-size:13px;fill:#000;font-weight:700;pointer-events:none;user-select:none}
+.pyr-detail-panel{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:22px;display:none;animation:fadeDown .25s ease}
+.pyr-detail-panel.open{display:block}
+.pyr-detail-panel h4{font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:12px;color:var(--acc)}
+.pyr-num-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--acc);color:#000;border-radius:50%;font-weight:700;font-size:.85rem;margin-right:8px;vertical-align:middle}
+
+/* ══ CHARACTERIZATION SYSTEM ══ */
+.char-battle{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin:24px 0}
+.char-card{background:var(--card);border:2px solid var(--gb);border-radius:var(--r);padding:20px;text-align:center;transition:all .3s;cursor:pointer;position:relative;overflow:hidden}
+.char-card::after{content:'';position:absolute;inset:0;background:var(--cc-grad,transparent);opacity:0;transition:opacity .3s}
+.char-card:hover::after,.char-card.selected::after{opacity:.08}
+.char-card.selected{border-color:var(--cc-color,var(--acc));box-shadow:0 0 0 1px var(--cc-color,var(--acc)),var(--sh)}
+.char-avatar{font-size:2.8rem;margin-bottom:10px;display:block}
+.char-card h3{font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:6px}
+.char-card p{font-size:.78rem;color:var(--muted);line-height:1.6}
+.char-vs{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--acc5);font-weight:900;text-align:center}
+.char-detail-box{background:var(--surface2);border:1px solid var(--gb);border-radius:var(--r);padding:20px;min-height:80px;margin-top:8px;transition:all .3s}
+
+/* ══ CONFLICT VISUALIZER ══ */
+.conflict-selector{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.cf-btn{background:var(--card);border:1px solid var(--gb);border-radius:8px;padding:8px 15px;cursor:pointer;font-size:.8rem;color:var(--muted);transition:all .18s;font-family:'DM Sans',sans-serif}
+.cf-btn:hover,.cf-btn.active{background:rgba(248,113,113,.12);border-color:var(--acc5);color:var(--acc5)}
+.conflict-arena{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:24px;margin:16px 0;min-height:160px}
+.conflict-vs-row{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.cf-side{flex:1;min-width:140px;text-align:center;padding:16px;background:var(--surface2);border-radius:10px;border:1px solid var(--gb)}
+.cf-side .cf-icon{font-size:2.2rem;margin-bottom:6px;display:block}
+.cf-side h4{font-size:.88rem;font-weight:600;margin-bottom:4px}
+.cf-side p{font-size:.75rem;color:var(--muted)}
+.cf-vs-badge{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--acc5);font-weight:900;flex-shrink:0}
+.cf-example-box{background:var(--hl-bg);border:1px solid var(--hl-border);border-radius:8px;padding:12px 16px;font-size:.83rem;color:var(--text);margin-top:12px;font-style:italic}
+
+/* ══ LITERARY DEVICES LAB ══ */
+.device-lab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin:20px 0}
+.device-card{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.device-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc-color,var(--acc));transform:scaleX(0);transition:transform .3s}
+.device-card:hover::before,.device-card.expanded::before{transform:scaleX(1)}
+.device-card:hover,.device-card.expanded{border-color:var(--dc-color,var(--acc));transform:translateY(-3px);box-shadow:var(--sh)}
+.device-card .dc-icon{font-size:1.8rem;margin-bottom:10px}
+.device-card h3{font-size:.95rem;font-weight:600;margin-bottom:6px}
+.device-card .dc-one-liner{font-size:.78rem;color:var(--muted);line-height:1.6}
+.device-expand{margin-top:12px;display:none;animation:fadeDown .2s ease}
+.device-card.expanded .device-expand{display:block}
+.device-example{background:var(--hl-bg);border:1px solid var(--hl-border);border-radius:7px;padding:10px 14px;font-size:.8rem;margin-top:8px;font-style:italic}
+.device-tag{font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;background:var(--glass);border:1px solid var(--gb);border-radius:4px;padding:2px 7px;color:var(--dc-color,var(--acc));display:inline-block;margin-top:8px}
+
+/* ══ POV SIMULATOR ══ */
+.pov-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.pov-tab{background:var(--card);border:1px solid var(--gb);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:.8rem;color:var(--muted);transition:all .18s;font-family:'DM Sans',sans-serif}
+.pov-tab.active{background:rgba(126,184,247,.12);border-color:var(--acc2);color:var(--acc2);font-weight:600}
+.pov-stage{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:22px;position:relative;overflow:hidden;min-height:120px}
+.pov-stage::before{content:attr(data-pov-label);position:absolute;top:0;right:0;background:var(--acc2);color:#000;font-size:.6rem;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:0 var(--r) 0 8px}
+.pov-stage p{font-size:.9rem;line-height:1.85;font-style:italic;color:var(--text)}
+.pov-def-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:20px}
+.pov-def-card{background:var(--surface2);border:1px solid var(--gb);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .2s}
+.pov-def-card:hover{border-color:var(--acc2)}
+.pov-def-card .pov-name{font-weight:600;font-size:.85rem;color:var(--acc2);margin-bottom:5px}
+.pov-def-card p{font-size:.78rem;color:var(--muted);line-height:1.6}
+
+/* ══ POETRY MODULES ══ */
+.poetry-module{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:20px;margin:12px 0;cursor:pointer;transition:all .22s;display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center}
+.poetry-module:hover{border-color:var(--acc3);transform:translateX(4px)}
+.poetry-module.pm-open{border-color:var(--acc3);background:rgba(167,139,250,.05)}
+.pm-icon{width:48px;height:48px;border-radius:10px;background:rgba(167,139,250,.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.pm-title{font-weight:600;font-size:.92rem;margin-bottom:3px}
+.pm-sub{font-size:.76rem;color:var(--muted)}
+.pm-arrow{color:var(--acc3);transition:transform .25s;font-size:.9rem}
+.poetry-module.pm-open .pm-arrow{transform:rotate(90deg)}
+.pm-body{padding:0 14px 14px 66px;display:none;animation:fadeDown .2s ease}
+.poetry-module.pm-open .pm-body{display:block}
+
+/* ══ COMPARISON TABLE ══ */
+.comp-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.85rem}
+.comp-table th{background:var(--surface2);padding:11px 14px;text-align:left;font-weight:600;color:var(--acc);border-bottom:2px solid var(--acc);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase}
+.comp-table td{padding:11px 14px;border-bottom:1px solid var(--gb);vertical-align:top;color:var(--text);line-height:1.6}
+.comp-table tr:hover td{background:var(--glass)}
+.comp-table .tag{display:inline-block;background:var(--glass);border:1px solid var(--gb);border-radius:4px;padding:1px 7px;font-size:.7rem;color:var(--acc3);font-weight:600}
+
+/* ══ FLASHCARDS ══ */
+.flashcard-wrap{perspective:1100px;margin:24px 0}
+.flashcard{width:100%;max-width:500px;height:210px;margin:0 auto;cursor:pointer;position:relative;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1)}
+.flashcard.flipped{transform:rotateY(180deg)}
+.fc-front,.fc-back{position:absolute;inset:0;border-radius:var(--r);backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px;text-align:center}
+.fc-front{background:linear-gradient(135deg,var(--card),var(--surface2));border:1px solid var(--gb)}
+.fc-back{background:linear-gradient(135deg,rgba(240,192,96,.14),rgba(167,139,250,.1));border:1px solid rgba(240,192,96,.3);transform:rotateY(180deg)}
+.fc-front h3{font-family:'Playfair Display',serif;font-size:1.25rem}
+.fc-front p{color:var(--muted);font-size:.77rem;margin-top:7px}
+.fc-back p{font-size:.88rem;line-height:1.7;color:var(--text)}
+.fc-hint{font-size:.68rem;color:var(--dim);margin-top:12px}
+.fc-nav{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.fc-btn{background:var(--card);border:1px solid var(--gb);border-radius:8px;padding:7px 16px;cursor:pointer;font-size:.8rem;color:var(--muted);transition:all .18s;font-family:'DM Sans',sans-serif}
+.fc-btn:hover{color:var(--acc);border-color:var(--acc)}
+.fc-count{font-size:.73rem;color:var(--dim);text-align:center;margin-top:7px}
+.fc-progress{height:3px;background:var(--gb);border-radius:2px;margin-top:8px;max-width:500px;margin-left:auto;margin-right:auto}
+.fc-progress-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc3));border-radius:2px;transition:width .4s}
+
+/* ══ QUIZ ══ */
+.quiz-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.quiz-num{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--acc);background:var(--glass);border:1px solid var(--gb);padding:3px 10px;border-radius:6px}
+.quiz-progress-wrap{flex:1;height:4px;background:var(--gb);border-radius:2px;overflow:hidden}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc3));border-radius:2px;transition:width .5s}
+.quiz-q{font-family:'Playfair Display',serif;font-size:1.08rem;margin-bottom:18px;line-height:1.55}
+.quiz-options{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+.quiz-opt{background:var(--card);border:1px solid var(--gb);border-radius:10px;padding:13px 16px;cursor:pointer;font-size:.86rem;transition:all .18s;text-align:left;font-family:'DM Sans',sans-serif;color:var(--text);display:flex;align-items:center;gap:10px}
+.quiz-opt-letter{width:26px;height:26px;border-radius:50%;background:var(--surface2);border:1px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;transition:all .18s}
+.quiz-opt:hover:not(.disabled){background:var(--surface2);border-color:var(--acc2)}
+.quiz-opt:hover:not(.disabled) .quiz-opt-letter{background:var(--acc2);border-color:var(--acc2);color:#000}
+.quiz-opt.correct{background:rgba(52,211,153,.1);border-color:var(--acc4)}
+.quiz-opt.correct .quiz-opt-letter{background:var(--acc4);border-color:var(--acc4);color:#000}
+.quiz-opt.wrong{background:rgba(248,113,113,.08);border-color:var(--acc5)}
+.quiz-opt.wrong .quiz-opt-letter{background:var(--acc5);border-color:var(--acc5);color:#000}
+.quiz-opt.disabled{cursor:default}
+.quiz-feedback{font-size:.85rem;padding:11px 14px;border-radius:8px;margin-bottom:14px;display:none}
+.quiz-feedback.show{display:block;animation:fadeDown .2s}
+.quiz-feedback.correct{background:rgba(52,211,153,.08);border:1px solid var(--acc4);color:var(--acc4)}
+.quiz-feedback.wrong{background:rgba(248,113,113,.07);border:1px solid var(--acc5);color:var(--acc5)}
+
+/* ══ BADGES ══ */
+.badges-grid{display:flex;flex-wrap:wrap;gap:14px;margin:18px 0}
+.badge{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;gap:12px;transition:all .22s;cursor:default}
+.badge.earned{border-color:rgba(240,192,96,.4);background:rgba(240,192,96,.05)}
+.badge.earned:hover{transform:scale(1.03);box-shadow:0 4px 20px rgba(240,192,96,.15)}
+.badge-icon{font-size:1.9rem;filter:grayscale(1);transition:filter .3s}
+.badge.earned .badge-icon{filter:none}
+.badge-info h4{font-size:.86rem;font-weight:600;color:var(--text)}
+.badge-info p{font-size:.72rem;color:var(--muted);margin-top:1px}
+.badge-new{font-size:.58rem;background:var(--acc);color:#000;padding:1px 5px;border-radius:4px;font-weight:700;margin-left:6px;vertical-align:middle}
+
+/* ══ TIMELINE ══ */
+.timeline{position:relative;padding-left:34px}
+.timeline::before{content:'';position:absolute;left:13px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--acc),var(--acc3),var(--acc2))}
+.tl-item{position:relative;margin-bottom:24px}
+.tl-dot{position:absolute;left:-28px;top:6px;width:15px;height:15px;border-radius:50%;border:2px solid var(--acc);background:var(--bg);z-index:1;transition:all .2s}
+.tl-item:hover .tl-dot{background:var(--acc);box-shadow:0 0 10px var(--acc)}
+.tl-content{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:16px 18px}
+.tl-label{font-size:.67rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:5px}
+.tl-content h4{font-family:'Playfair Display',serif;font-size:.95rem;margin-bottom:7px}
+.tl-content p{font-size:.82rem;color:var(--muted);line-height:1.65}
+
+/* ══ PILL NAV ══ */
+.pill-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px;background:var(--card);border:1px solid var(--gb);border-radius:12px;padding:7px}
+.pill{background:none;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:.8rem;color:var(--muted);transition:all .18s;font-family:'DM Sans',sans-serif}
+.pill.active{background:var(--acc);color:#000;font-weight:600}
+.story-panel{display:none}
+.story-panel.active{display:block;animation:fadeDown .25s ease}
+
+/* ══ EXPLORER CARDS ══ */
+.explorer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin:22px 0}
+.explorer-card{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden}
+.explorer-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--ec-color,var(--acc));transform:scaleX(0);transition:transform .28s}
+.explorer-card:hover::after{transform:scaleX(1)}
+.explorer-card:hover{border-color:var(--ec-color,var(--acc));transform:translateY(-3px)}
+.ec-icon{font-size:1.5rem;margin-bottom:9px}
+.ec-title{font-weight:600;font-size:.88rem;margin-bottom:5px}
+.ec-preview{font-size:.76rem;color:var(--muted);line-height:1.55}
+.ec-count{font-size:.66rem;color:var(--dim);margin-top:7px;font-weight:500}
+
+/* ══ GLOSSARY ══ */
+.gloss-search{width:100%;background:var(--card);border:1px solid var(--gb);border-radius:10px;padding:10px 14px;color:var(--text);font-size:.86rem;outline:none;font-family:'DM Sans',sans-serif;margin-bottom:18px;transition:border-color .2s}
+.gloss-search:focus{border-color:var(--acc)}
+.gloss-filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.gloss-filter{background:var(--card);border:1px solid var(--gb);border-radius:20px;padding:4px 12px;cursor:pointer;font-size:.75rem;color:var(--muted);transition:all .18s;font-family:'DM Sans',sans-serif}
+.gloss-filter.active{background:var(--acc3);border-color:var(--acc3);color:#fff}
+.gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.gloss-item{background:var(--card);border:1px solid var(--gb);border-radius:10px;padding:14px;transition:all .18s;cursor:default}
+.gloss-item:hover{border-color:rgba(167,139,250,.4);box-shadow:0 4px 18px rgba(167,139,250,.08)}
+.gloss-term{font-weight:600;color:var(--acc3);font-size:.9rem;margin-bottom:5px}
+.gloss-def{font-size:.79rem;color:var(--muted);line-height:1.6}
+.gloss-cat{font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+.gloss-item.hidden{display:none}
+
+/* ══ SEARCH RESULTS ══ */
+.search-results{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--gb);border-radius:0 0 10px 10px;max-height:240px;overflow-y:auto;z-index:200;display:none}
+.search-results.open{display:block}
+.sr-item{padding:9px 14px;cursor:pointer;font-size:.8rem;color:var(--text);transition:background .15s;border-bottom:1px solid var(--gb)}
+.sr-item:hover{background:var(--glass);color:var(--acc)}
+.sr-item mark{background:rgba(240,192,96,.3);color:var(--acc);border-radius:2px;padding:0 2px}
+
+/* ══ REVISION OVERLAY ══ */
+#revision-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center}
+#revision-overlay.open{display:flex}
+.revision-box{background:var(--surface);border:1px solid var(--gb);border-radius:20px;padding:36px;max-width:640px;width:90%;max-height:82vh;overflow-y:auto;position:relative}
+.revision-close{position:absolute;top:14px;right:18px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted)}
+.revision-close:hover{color:var(--acc)}
+.revision-card{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:18px;margin:10px 0;border-left:3px solid var(--acc)}
+.revision-card h4{font-family:'Playfair Display',serif;font-size:.95rem;margin-bottom:5px;color:var(--acc)}
+.revision-card p{font-size:.83rem;color:var(--muted);line-height:1.65}
+
+/* ══ EXAM OVERLAY ══ */
+#exam-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center}
+#exam-overlay.open{display:flex}
+.exam-box{background:var(--surface);border:1px solid var(--gb);border-radius:20px;padding:34px;max-width:660px;width:90%;max-height:88vh;overflow-y:auto;position:relative}
+
+/* ══ BUTTONS ══ */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:10px;cursor:pointer;font-size:.86rem;font-weight:500;transition:all .2s;border:none;font-family:'DM Sans',sans-serif}
+.btn-primary{background:var(--acc);color:#000}
+.btn-primary:hover{background:#f5cd78;transform:translateY(-1px)}
+.btn-outline{background:none;border:1px solid var(--gb);color:var(--text)}
+.btn-outline:hover{border-color:var(--acc);color:var(--acc)}
+
+/* ══ XP TOAST ══ */
+#xp-toast{position:fixed;bottom:30px;right:30px;background:linear-gradient(135deg,var(--acc),var(--acc3));color:#000;padding:10px 20px;border-radius:12px;font-weight:700;font-size:.88rem;z-index:300;opacity:0;transform:translateY(20px);transition:all .4s;pointer-events:none}
+#xp-toast.show{opacity:1;transform:translateY(0)}
+
+/* ══ CONCEPT MAP ══ */
+.concept-map{background:var(--card);border:1px solid var(--gb);border-radius:var(--r);padding:24px;margin:20px 0;overflow-x:auto}
+.cm-center{text-align:center;margin-bottom:20px}
+.cm-center .cm-node{display:inline-block;background:var(--acc);color:#000;font-weight:700;font-family:'Playfair Display',serif;font-size:1rem;padding:10px 20px;border-radius:10px}
+.cm-branches{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.cm-branch{background:var(--surface2);border:1px solid var(--gb);border-radius:8px;padding:10px 16px;font-size:.8rem;text-align:center;flex:1;min-width:120px;max-width:160px;cursor:pointer;transition:all .2s}
+.cm-branch:hover{border-color:var(--acc2);color:var(--acc2)}
+.cm-branch .cm-b-icon{font-size:1.3rem;display:block;margin-bottom:4px}
+
+/* ══ LOADING DOTS ══ */
+.loading-dots{display:inline-flex;gap:3px}
+.loading-dots span{width:5px;height:5px;background:var(--acc);border-radius:50%;animation:blink 1.2s infinite}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  :root{--sw:260px}
+  .section{padding:24px 16px 40px}
+  #topbar{padding:0 12px}
+  .hero{padding:36px 16px 54px}
+  .char-battle{grid-template-columns:1fr;gap:10px}
+  .char-vs{display:none}
+}
+@media(max-width:480px){
+  #sidebar{width:100%;transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #main,#topbar{margin-left:0;left:0}
+}
+</style>
+</head>
+<body>
+<div id="particles"></div>
+<div id="scroll-ind"></div>
+<div id="xp-toast" id="xp-toast">+10 XP ✨</div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <h2>📖 Introduction to Criticism</h2>
+    <p>Qena University · First Year · 2025–2026</p>
+  </div>
+  <div class="sb-search">
+    <input type="text" id="sb-search-input" placeholder="🔍 Search concepts…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-group-label">🏠 Overview</div>
+    <a class="nav-item active" onclick="goSection('home')"><span class="nav-icon">🏠</span>Home</a>
+    <a class="nav-item" onclick="goSection('glossary')"><span class="nav-icon">📚</span>Glossary</a>
+    <div class="nav-group-label">📖 Short Story</div>
+    <a class="nav-item" onclick="goSection('plot')"><span class="nav-icon">🏔</span>Plot & Freytag's Pyramid</a>
+    <a class="nav-item" onclick="goSection('character')"><span class="nav-icon">👤</span>Characterization</a>
+    <a class="nav-item" onclick="goSection('conflict')"><span class="nav-icon">⚔️</span>Conflict</a>
+    <a class="nav-item" onclick="goSection('theme')"><span class="nav-icon">💡</span>Theme</a>
+    <a class="nav-item" onclick="goSection('setting')"><span class="nav-icon">🌍</span>Setting</a>
+    <a class="nav-item" onclick="goSection('style')"><span class="nav-icon">✍️</span>Style & Figurative Language</a>
+    <a class="nav-item" onclick="goSection('pov')"><span class="nav-icon">👁</span>Narrator & Point of View</a>
+    <div class="nav-group-label">📜 Story Analysis</div>
+    <a class="nav-item" onclick="goSection('story1')"><span class="nav-icon">🕰</span>"The Story of An Hour"</a>
+    <a class="nav-item" onclick="goSection('story2')"><span class="nav-icon">🧪</span>"Hilary's Aunt"</a>
+    <div class="nav-group-label">🎵 Poetry</div>
+    <a class="nav-item" onclick="goSection('poetry')"><span class="nav-icon">🎵</span>Elements of Poetry</a>
+    <a class="nav-item" onclick="goSection('sound')"><span class="nav-icon">🔊</span>Sound Devices</a>
+    <a class="nav-item" onclick="goSection('poform')"><span class="nav-icon">📐</span>Rhythm, Meter & Form</a>
+    <div class="nav-group-label">🎮 Practice</div>
+    <a class="nav-item" onclick="goSection('flashcards')"><span class="nav-icon">🃏</span>Flashcards</a>
+    <a class="nav-item" onclick="goSection('quiz')"><span class="nav-icon">🧠</span>Mini Quiz</a>
+    <a class="nav-item" onclick="goSection('badges')"><span class="nav-icon">🏆</span>Achievements</a>
+  </div>
+  <div class="sb-footer">
+    <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xp-fill" style="width:0%"></div></div>
+    <div class="xp-label"><span id="xp-label-text">0 XP</span><span id="xp-level">Level 1</span></div>
+  </div>
+</nav>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <button id="toggle-sidebar" onclick="toggleSidebar()">☰</button>
+  <div class="topbar-title" id="topbar-title">Home</div>
+  <div class="topbar-actions">
+    <button class="btn-icon" onclick="openRevision()">📋 Revision</button>
+    <button class="btn-icon" onclick="openExam()">📝 Exam</button>
+    <button class="btn-icon" onclick="toggleTheme()" id="theme-btn">☀️ Light</button>
+    <span class="xp-chip" id="xp-chip-display">0 XP</span>
+  </div>
+</div>
+
+<main id="main">
+
+<!-- ════════════ HOME ════════════ -->
+<div id="sec-home" class="section active">
+  <div class="hero">
+    <div class="hero-tag">🎓 Qena University · Faculty of Arts · English Dept.</div>
+    <h1>Introduction to Literary Criticism</h1>
+    <p>A complete interactive guide to short story analysis, poetry elements, and literary devices — built from your highlighted textbook notes.</p>
+    <div class="hero-stats">
+      <div class="stat-card"><div class="num" id="stat-visited">1</div><div class="lbl">Sections Visited</div></div>
+      <div class="stat-card"><div class="num">12</div><div class="lbl">Core Elements</div></div>
+      <div class="stat-card"><div class="num">40+</div><div class="lbl">Flashcards</div></div>
+      <div class="stat-card"><div class="num">15</div><div class="lbl">Quiz Questions</div></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-header">
+    <div class="section-tag">Concept Map</div>
+    <div class="section-title">How everything <span>connects</span></div>
+    <div class="section-sub">Literary criticism examines how stories work. Every element below feeds into understanding a text.</div>
+  </div>
+  <div class="concept-map">
+    <div class="cm-center"><div class="cm-node">📖 Short Story Analysis</div></div>
+    <div class="cm-branches">
+      <div class="cm-branch" onclick="goSection('plot')"><span class="cm-b-icon">🏔</span>Plot</div>
+      <div class="cm-branch" onclick="goSection('character')"><span class="cm-b-icon">👤</span>Character</div>
+      <div class="cm-branch" onclick="goSection('conflict')"><span class="cm-b-icon">⚔️</span>Conflict</div>
+      <div class="cm-branch" onclick="goSection('theme')"><span class="cm-b-icon">💡</span>Theme</div>
+      <div class="cm-branch" onclick="goSection('setting')"><span class="cm-b-icon">🌍</span>Setting</div>
+      <div class="cm-branch" onclick="goSection('style')"><span class="cm-b-icon">✍️</span>Style</div>
+      <div class="cm-branch" onclick="goSection('pov')"><span class="cm-b-icon">👁</span>Point of View</div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-header">
+    <div class="section-tag">Navigate</div>
+    <div class="section-title">Choose your <span>learning path</span></div>
+  </div>
+  <div class="explorer-grid">
+    <div class="explorer-card" style="--ec-color:#f0c060" onclick="goSection('plot')"><div class="ec-icon">🏔</div><div class="ec-title">Plot & Freytag's Pyramid</div><div class="ec-preview">The five-part dramatic structure with interactive animated pyramid.</div><div class="ec-count">▶ Interactive pyramid · Story timeline</div></div>
+    <div class="explorer-card" style="--ec-color:#7eb8f7" onclick="goSection('character')"><div class="ec-icon">👤</div><div class="ec-title">Characterization</div><div class="ec-preview">Protagonist, antagonist, static, dynamic — visual comparison system.</div><div class="ec-count">▶ Character battle cards</div></div>
+    <div class="explorer-card" style="--ec-color:#f87171" onclick="goSection('conflict')"><div class="ec-icon">⚔️</div><div class="ec-title">Conflict</div><div class="ec-preview">Internal vs external with animated conflict visualizer.</div><div class="ec-count">▶ 4 conflict types · Visual scenarios</div></div>
+    <div class="explorer-card" style="--ec-color:#34d399" onclick="goSection('theme')"><div class="ec-icon">💡</div><div class="ec-title">Theme</div><div class="ec-preview">The hidden central message every story wants you to walk away with.</div><div class="ec-count">▶ Examples from both stories</div></div>
+    <div class="explorer-card" style="--ec-color:#a78bfa" onclick="goSection('style')"><div class="ec-icon">✍️</div><div class="ec-title">Literary Devices Lab</div><div class="ec-preview">Irony (3 types), symbolism, metaphor, foreshadowing — interactive cards.</div><div class="ec-count">▶ Click-to-expand device lab</div></div>
+    <div class="explorer-card" style="--ec-color:#fb923c" onclick="goSection('pov')"><div class="ec-icon">👁</div><div class="ec-title">POV Simulator</div><div class="ec-preview">Switch between all 4 narrative perspectives live.</div><div class="ec-count">▶ Dynamic POV switching</div></div>
+    <div class="explorer-card" style="--ec-color:#f0c060" onclick="goSection('story1')"><div class="ec-icon">🕰</div><div class="ec-title">"The Story of An Hour"</div><div class="ec-preview">Full critical analysis with tabbed navigation.</div><div class="ec-count">▶ Plot · Character · Conflict · Theme · Style</div></div>
+    <div class="explorer-card" style="--ec-color:#7eb8f7" onclick="goSection('story2')"><div class="ec-icon">🧪</div><div class="ec-title">"Hilary's Aunt"</div><div class="ec-preview">The twisted mercy killing and the aunt's final victory.</div><div class="ec-count">▶ Full analysis · Timeline</div></div>
+    <div class="explorer-card" style="--ec-color:#34d399" onclick="goSection('poetry')"><div class="ec-icon">🎵</div><div class="ec-title">Poetry Elements</div><div class="ec-preview">12 interactive poetry modules — tone, mood, imagery, and more.</div><div class="ec-count">▶ Expandable modules</div></div>
+    <div class="explorer-card" style="--ec-color:#f87171" onclick="goSection('flashcards')"><div class="ec-icon">🃏</div><div class="ec-title">Flashcards</div><div class="ec-preview">40+ flip cards with shuffle mode and progress tracking.</div><div class="ec-count">▶ 40 cards · XP rewards</div></div>
+    <div class="explorer-card" style="--ec-color:#a78bfa" onclick="goSection('quiz')"><div class="ec-icon">🧠</div><div class="ec-title">Mini Quiz</div><div class="ec-preview">15 questions, instant feedback, score tracking.</div><div class="ec-count">▶ 15 questions · Score tracker</div></div>
+    <div class="explorer-card" style="--ec-color:#f0c060" onclick="goSection('glossary')"><div class="ec-icon">📚</div><div class="ec-title">Glossary</div><div class="ec-preview">Searchable reference of all literary terms, filterable by category.</div><div class="ec-count">▶ 40 terms · Live search · Categories</div></div>
+  </div>
+</div>
+
+<!-- ════════════ PLOT ════════════ -->
+<div id="sec-plot" class="section">
+  <div class="section-header">
+    <div class="section-tag">Element 1 · Short Story</div>
+    <div class="section-title">Plot & <span>Freytag's Pyramid</span></div>
+    <div class="section-sub">The plot is the backbone of every story. Understanding its structure helps you analyze any piece of fiction.</div>
+  </div>
+
+  <div class="hl-box pulse"><div class="hl-label">DEFINITION — FROM YOUR NOTES</div><div class="hl-text">The plot is the main sequence of events that make up the story.</div></div>
+  <div class="hl-box"><div class="hl-label">DEFINITION</div><div class="hl-text">Plot is the order of events in the story. The plot usually follows a particular structure called Freytag's Pyramid.</div></div>
+  <div class="hl-box"><div class="hl-label">KEY FACT</div><div class="hl-text">Freytag's Pyramid has five parts: exposition, rising action, climax, falling action, and denouement, also known as resolution.</div></div>
+
+  <div class="divider"></div>
+  <div class="section-header">
+    <div class="section-tag">Interactive Visualization</div>
+    <div class="section-title">Freytag's <span>Pyramid</span></div>
+    <div class="section-sub">Click any stage of the pyramid to reveal the exact highlighted definition.</div>
+  </div>
+
+  <div class="pyramid-interactive">
+    <div class="pyramid-svg-wrap">
+      <svg viewBox="0 0 560 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Exposition base -->
+        <polygon points="0,280 560,280 480,230 80,230" fill="#7eb8f7" class="pyr-stage" id="ps-exposition" onclick="showPyrStage('exposition')" data-tip="Click to learn about Exposition"/>
+        <text x="280" y="260" text-anchor="middle" class="pyr-label-text">🌅 Exposition</text>
+        <!-- Resolution -->
+        <polygon points="80,230 480,230 420,180 140,180" fill="#34d399" class="pyr-stage" id="ps-resolution" onclick="showPyrStage('resolution')" />
+        <text x="280" y="210" text-anchor="middle" class="pyr-label-text">✅ Resolution / Denouement</text>
+        <!-- Rising Action left -->
+        <polygon points="140,180 280,60 280,60 200,130 140,180" fill="#f0c060" class="pyr-stage" id="ps-rising" onclick="showPyrStage('rising')" />
+        <text x="190" y="142" text-anchor="middle" class="pyr-label-text" transform="rotate(-42,190,142)">📈 Rising</text>
+        <!-- Falling Action right -->
+        <polygon points="280,60 420,180 360,130 280,60" fill="#fb923c" class="pyr-stage" id="ps-falling" onclick="showPyrStage('falling')" />
+        <text x="370" y="142" text-anchor="middle" class="pyr-label-text" transform="rotate(42,370,142)">📉 Falling</text>
+        <!-- Climax peak -->
+        <polygon points="200,130 360,130 280,60" fill="#f87171" class="pyr-stage" id="ps-climax" onclick="showPyrStage('climax')" />
+        <text x="280" y="108" text-anchor="middle" class="pyr-label-text">⛰ Climax</text>
+        <!-- Inciting incident marker -->
+        <circle cx="140" cy="200" r="6" fill="#fff" opacity=".8"/>
+        <text x="100" y="196" text-anchor="middle" font-size="9" fill="white" opacity=".7">Inciting</text>
+        <text x="100" y="207" text-anchor="middle" font-size="9" fill="white" opacity=".7">Incident</text>
+      </svg>
+    </div>
+
+    <div id="pyr-detail-exposition" class="pyr-detail-panel">
+      <h4><span class="pyr-num-badge">1</span>Exposition — Where It All Begins</h4>
+      <div class="hl-box"><div class="hl-text">Your story has to start somewhere, and in Freytag's Pyramid, it starts with the exposition. This part of the story primarily introduces the major fictional elements – the setting, characters, style, etc. In the exposition, the writer's sole focus is on building the world in which the story's conflict happens.</div></div>
+      <div class="hl-box"><div class="hl-text">Your exposition should end with the "inciting incident" – the event that starts the main conflict of the story.</div></div>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:10px">💡 <em>Think of the exposition as setting the stage — introducing who, where, and when before the action starts.</em></p>
+    </div>
+    <div id="pyr-detail-rising" class="pyr-detail-panel">
+      <h4><span class="pyr-num-badge" style="background:var(--acc)">2</span>Rising Action — Building Tension</h4>
+      <div class="hl-box"><div class="hl-text">The rising action explores the story's conflict up until its climax.</div></div>
+      <div class="hl-box"><div class="hl-text">Often, things "get worse" in this part of the story: someone makes a wrong decision, the antagonist hurts the protagonist, new characters further complicate the plot, etc.</div></div>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:10px">💡 <em>This is where tension builds — each event makes the conflict bigger and harder to escape.</em></p>
+    </div>
+    <div id="pyr-detail-climax" class="pyr-detail-panel">
+      <h4><span class="pyr-num-badge" style="background:var(--acc5)">3</span>Climax — The Turning Point</h4>
+      <div class="hl-box"><div class="hl-text">Of course, every part of your story is important, but if there's one part where you really want to stick the landing, it's the climax. Here, the story's conflict peaks and we learn the fate of the main characters.</div></div>
+      <div class="hl-box"><div class="hl-text">The climax is the point of greatest tension or intensity in the short story. It is the point where events take a major turn as the story races towards its conclusion.</div></div>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:10px">💡 <em>The climax is the peak of the mountain — the moment everything changes.</em></p>
+    </div>
+    <div id="pyr-detail-falling" class="pyr-detail-panel">
+      <h4><span class="pyr-num-badge" style="background:var(--acc2)">4</span>Falling Action — The Aftermath</h4>
+      <div class="hl-box"><div class="hl-text">In falling action, the writer explores the aftermath of the climax.</div></div>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:10px">💡 <em>After the turning point, the story winds down — consequences unfold and the world begins to settle into a new shape.</em></p>
+    </div>
+    <div id="pyr-detail-resolution" class="pyr-detail-panel">
+      <h4><span class="pyr-num-badge" style="background:var(--acc4)">5</span>Resolution / Denouement</h4>
+      <div class="hl-box"><div class="hl-text">The resolution of the story involves tying up the loose ends of the climax and falling action.</div></div>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:10px">💡 <em>"Denouement" is a French word meaning "untying." The resolution unties all the knots the story created.</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ CHARACTERIZATION ════════════ -->
+<div id="sec-character" class="section">
+  <div class="section-header">
+    <div class="section-tag">Element 2 · Short Story</div>
+    <div class="section-title"><span>Characterization</span></div>
+    <div class="section-sub">How authors build and develop the people who inhabit their stories.</div>
+  </div>
+
+  <div class="hl-box pulse"><div class="hl-label">PROTAGONIST vs ANTAGONIST</div><div class="hl-text">One character is clearly central to the story with all major events having some importance to this character — he/she is the PROTAGONIST. The opposite of the main character is called the ANTAGONIST.</div></div>
+
+  <div class="divider"></div>
+  <div class="section-header">
+    <div class="section-tag">Interactive Character Battle</div>
+    <div class="section-title">Click a card to <span>explore</span></div>
+  </div>
+
+  <div class="char-battle">
+    <div class="char-card" style="--cc-color:#f0c060;--cc-grad:linear-gradient(135deg,#f0c060,#fb923c)" onclick="selectChar('protagonist')">
+      <span class="char-avatar">🦸</span>
+      <h3>Protagonist</h3>
+      <p>The main character — central to all events</p>
+      <span class="card-tag">MAIN CHARACTER</span>
+    </div>
+    <div class="char-vs">VS</div>
+    <div class="char-card" style="--cc-color:#f87171;--cc-grad:linear-gradient(135deg,#f87171,#a78bfa)" onclick="selectChar('antagonist')">
+      <span class="char-avatar">🦹</span>
+      <h3>Antagonist</h3>
+      <p>The adversary — creates or drives conflict</p>
+      <span class="card-tag">OPPOSING FORCE</span>
+    </div>
+  </div>
+
+  <div class="char-detail-box" id="char-detail-box">
+    <p style="color:var(--muted);font-size:.85rem;text-align:center">👆 Click a character card above to see the highlighted definition</p>
+  </div>
+
+  <div class="divider"></div>
+  <h3 style="font-family:'Playfair Display',serif;margin-bottom:16px">Static vs. Dynamic — Click to Compare</h3>
+  <div class="char-battle">
+    <div class="char-card" style="--cc-color:#7eb8f7" onclick="selectChar('static')">
+      <span class="char-avatar">🪨</span>
+      <h3>Static Character</h3>
+      <p>Also called "flat" — stays the same throughout</p>
+      <span class="card-tag">NO CHANGE</span>
+    </div>
+    <div class="char-vs">VS</div>
+    <div class="char-card" style="--cc-color:#34d399" onclick="selectChar('dynamic')">
+      <span class="char-avatar">🦋</span>
+      <h3>Dynamic Character</h3>
+      <p>Also called "round" — changes and grows</p>
+      <span class="card-tag">GROWTH & CHANGE</span>
+    </div>
+  </div>
+  <div class="char-detail-box" id="char-detail-box2">
+    <p style="color:var(--muted);font-size:.85rem;text-align:center">👆 Click a card to see the highlighted definition</p>
+  </div>
+
+  <div class="divider"></div>
+  <table class="comp-table">
+    <thead><tr><th>Type</th><th>Also Known As</th><th>Changes?</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag">Protagonist</span></td><td>Main character</td><td>Often</td><td>Central to all events</td></tr>
+      <tr><td><span class="tag">Antagonist</span></td><td>Adversary / Opponent</td><td>Rarely</td><td>Creates the conflict</td></tr>
+      <tr><td><span class="tag">Static / Flat</span></td><td>Flat character</td><td>❌ No</td><td>Predictable, simple</td></tr>
+      <tr><td><span class="tag">Dynamic / Round</span></td><td>Round character</td><td>✅ Yes</td><td>Complex, multi-dimensional</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════════ CONFLICT ════════════ -->
+<div id="sec-conflict" class="section">
+  <div class="section-header">
+    <div class="section-tag">Element 3 · Short Story</div>
+    <div class="section-title"><span>Conflict</span></div>
+    <div class="section-sub">The engine of every story. Without conflict, there is no plot.</div>
+  </div>
+
+  <div class="hl-box pulse"><div class="hl-label">CORE PRINCIPLE</div><div class="hl-text">Conflict is essential to plot. Without conflict there is no plot.</div></div>
+  <div class="hl-box"><div class="hl-label">DEFINITION</div><div class="hl-text">Conflict is the struggle between two entities. The main character, also known as the protagonist, encounters a conflict with the antagonist, which is an adversary.</div></div>
+
+  <div class="divider"></div>
+  <div class="cards-grid">
+    <div class="card" style="--card-accent:linear-gradient(90deg,#f87171,#fb923c)">
+      <div class="card-icon">🌍</div>
+      <h3>External Conflict</h3>
+      <div class="hl-box" style="margin:10px 0 0"><div class="hl-text">1) External — A struggle with a force outside one's self.</div></div>
+      <span class="card-tag">OUTSIDE THE CHARACTER</span>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#a78bfa,#7eb8f7)">
+      <div class="card-icon">🧠</div>
+      <h3>Internal Conflict</h3>
+      <div class="hl-box" style="margin:10px 0 0"><div class="hl-text">2) Internal — A struggle within one's self; a person must make some decision, overcome pain, quiet their temper, resist an urge, etc.</div></div>
+      <span class="card-tag">INSIDE THE CHARACTER</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <h3 style="font-family:'Playfair Display',serif;margin-bottom:6px">Four Types — Interactive Visualizer</h3>
+  <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px">Click a type to animate the conflict scenario:</p>
+
+  <div class="conflict-selector">
+    <button class="cf-btn active" onclick="showConflictType('charchar')">🤜 Person vs. Person</button>
+    <button class="cf-btn" onclick="showConflictType('charnature')">🌊 Person vs. Nature</button>
+    <button class="cf-btn" onclick="showConflictType('charsociety')">🏛 Person vs. Society</button>
+    <button class="cf-btn" onclick="showConflictType('charcirc')">🎲 Person vs. Circumstance</button>
+  </div>
+
+  <div class="conflict-arena" id="conflict-arena">
+    <div class="conflict-vs-row">
+      <div class="cf-side">
+        <span class="cf-icon" id="cf-left-icon">🦸</span>
+        <h4>Protagonist</h4>
+        <p id="cf-left-desc">The main character faces a challenge.</p>
+      </div>
+      <div class="cf-vs-badge">VS</div>
+      <div class="cf-side">
+        <span class="cf-icon" id="cf-right-icon">🦹</span>
+        <h4 id="cf-right-title">Antagonist</h4>
+        <p id="cf-right-desc">An opposing force drives the story.</p>
+      </div>
+    </div>
+    <div class="cf-example-box" id="cf-example">
+      Select a conflict type above to see a literary example.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ THEME ════════════ -->
+<div id="sec-theme" class="section">
+  <div class="section-header">
+    <div class="section-tag">Element 4 · Short Story</div>
+    <div class="section-title"><span>Theme</span></div>
+    <div class="section-sub">The invisible heartbeat of every story — what it is really about beneath the surface events.</div>
+  </div>
+  <div class="hl-box pulse"><div class="hl-label">DEFINITION</div><div class="hl-text">The theme is the main idea, lesson, or message in the short story.</div></div>
+  <div class="hl-box"><div class="hl-label">KEY INSIGHT</div><div class="hl-text">Theme is a hidden element, but incredibly important.</div></div>
+  <div class="cards-grid">
+    <div class="card" style="--card-accent:linear-gradient(90deg,#34d399,#7eb8f7)">
+      <div class="card-icon">🔍</div><h3>Hidden but Central</h3>
+      <p>Unlike plot (which is explicit), theme is implicit. The author never states it directly — you must infer it from events, characters, conflicts, and resolution.</p>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#f0c060,#fb923c)">
+      <div class="card-icon">🌐</div><h3>Universal Message</h3>
+      <p>A good theme speaks to universal human experiences: love, loss, freedom, identity, justice, courage, or the passage of time.</p>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#a78bfa,#f87171)">
+      <div class="card-icon">📖</div><h3>Multiple Themes Possible</h3>
+      <p>A story can have more than one theme — a central (main) theme and several secondary themes, all woven together through the narrative.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ SETTING ════════════ -->
+<div id="sec-setting" class="section">
+  <div class="section-header">
+    <div class="section-tag">Element 5 · Short Story</div>
+    <div class="section-title"><span>Setting</span></div>
+    <div class="section-sub">Where and when the story takes place — and why that matters deeply.</div>
+  </div>
+  <div class="hl-box pulse"><div class="hl-label">DEFINITION</div><div class="hl-text">Setting is a description of where and when the story takes place. In a short story there are fewer settings compared to a novel.</div></div>
+  <div class="cards-grid">
+    <div class="card" style="--card-accent:linear-gradient(90deg,#7eb8f7,#34d399)">
+      <div class="card-icon">📍</div><h3>Place</h3>
+      <p>The physical location — a room, a city, a landscape. In short stories, typically one or two key locations carry symbolic weight.</p>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#f0c060,#fb923c)">
+      <div class="card-icon">🕐</div><h3>Time</h3>
+      <p>The historical period, season, time of day, or era. Time shapes what characters can and cannot do — especially regarding social expectations.</p>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#a78bfa,#7eb8f7)">
+      <div class="card-icon">🌡</div><h3>Atmosphere</h3>
+      <p>The emotional tone created by the setting. A stormy night creates dread; a sunny spring morning creates hope. Setting and mood are deeply connected.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ STYLE / LITERARY DEVICES LAB ════════════ -->
+<div id="sec-style" class="section">
+  <div class="section-header">
+    <div class="section-tag">Element 6 · Short Story</div>
+    <div class="section-title">Style & <span>Literary Devices Lab</span></div>
+    <div class="section-sub">Click any device card to expand it and see the exact definition, explanation, and example.</div>
+  </div>
+
+  <div class="hl-box pulse"><div class="hl-label">DEFINITION</div><div class="hl-text">Style: The manner in which an author expresses himself or herself in writing.</div></div>
+  <div class="hl-box"><div class="hl-text">The language that the authors use to convey their thoughts.</div></div>
+
+  <div class="divider"></div>
+  <h3 style="font-family:'Playfair Display',serif;margin-bottom:6px">Literary Devices — Click a Card to Explore</h3>
+  <p style="color:var(--muted);font-size:.84rem;margin-bottom:16px">Each card reveals the highlighted definition from your textbook + a visual example.</p>
+
+  <div class="device-lab-grid">
+    <div class="device-card" style="--dc-color:#7eb8f7" onclick="toggleDevice(this)">
+      <div class="dc-icon">🔗</div>
+      <h3>Allusion</h3>
+      <div class="dc-one-liner">An indirect reference to another work, person, event, or place.</div>
+      <div class="device-expand">
+        <div class="hl-box"><div class="hl-label">DEFINITION — FROM YOUR NOTES</div><div class="hl-text">Allusion. An indirect reference to another artistic work or person, event, or place.</div></div>
+        <div class="device-example">💡 "He was a real Romeo" — alludes to Shakespeare's romantic hero.</div>
+        <span class="device-tag">FIGURATIVE LANGUAGE</span>
+      </div>
+    </div>
+    <div class="device-card" style="--dc-color:#f0c060" onclick="toggleDevice(this)">
+      <div class="dc-icon">🔮</div>
+      <h3>Foreshadowing</h3>
+      <div class="dc-one-liner">Hints or clues that suggest what will happen later.</div>
+      <div class="device-expand">
+        <div class="hl-box"><div class="hl-label">DEFINITION — FROM YOUR NOTES</div><div class="hl-text">Foreshadowing. The use of hints or clues to suggest what will happen later in a literary work.</div></div>
+        <div class="device-example">💡 Louise's "heart trouble" foreshadows her fatal collapse at the end of "The Story of an Hour."</div>
+        <span class="device-tag">NARRATIVE DEVICE</span>
+      </div>
+    </div>
+    <div class="device-card" style="--dc-color:#fb923c" onclick="toggleDevice(this)">
+      <div class="dc-icon">🎭</div>
+      <h3>Verbal Irony</h3>
+      <div class="dc-one-liner">Saying one thing and meaning the opposite.</div>
+      <div class="device-expand">
+        <div class="hl-box"><div class="hl-label">DEFINITION — FROM YOUR NOTES</div><div class="hl-text">Verbal irony is when an author says one thing and means something else. What is said is actually the opposite of what is meant/intended. Verbal irony occurs when a narrator or character says one thing and means something else.</div></div>
+        <div class="device-example">💡 Calling a terrible day "just wonderful" is verbal irony.</div>
+        <span class="device-tag">TYPE OF IRONY</span>
+      </div>
+    </div>
+    <div class="device-card" style="--dc-color:#f87171" onclick="toggleDevice(this)">
+      <div class="dc-icon">🎬</div>
+      <h3>Dramatic Irony</h3>
+      <div class="dc-one-liner">The audience knows something the characters don't.</div>
+      <div class="device-expand">
+        <div class="hl-box"><div class="hl-label">DEFINITION — FROM YOUR NOTES</div><div class="hl-text">Dramatic irony is when an audience perceives something that the characters don't know. It is also the contrast between what a character or narrator says and what a reader knows to be true.</div></div>
+        <div class="device-example">💡 We know Brently is alive; Louise doesn't — creating dramatic irony in "The Story of an Hour."</div>
+        <span class="device-tag">TYPE OF IRONY</span>
+      </div>
+    </div>
+    <div class="device-card" style="--dc-color:#a78bfa" onclick="toggleDevice(this)">
+      <div class="dc-icon">🎲</div>
+      <h3>Situational Irony</h3>
+      <div class="dc-one-liner">The outcome is opposite to what was expected.</div>
+      <div class="device-expand">
+        <div class="hl-box"><div class="hl-label">DEFINITION — FROM YOUR NOTES</div><div class="hl-text">Situational irony is a contradiction between the expected result and the actual result or between appearance and reality, or between expectation and fulfillment, or between what is and what would seem appropriate.</div></div>
+        <div class="device-example">💡 The doctors say Louise died of "joy" — but the reader knows it was the death of her freedom.</div>
+        <span class="device-tag">TYPE OF IRONY</span>
+      </div>
+    </div>
+    <div class="device-card" style="--dc-color:#34d399" onclick="toggleDevice(this)">
+      <div class="dc-icon">🔷</div>
+      <h3>Symbolism</h3>
+      <div class="dc-one-liner">An object or action that means more than its literal meaning.</div>
+      <div class="device-expand">
+        <div class="hl-box"><div class="hl-label">DEFINITION — FROM YOUR NOTES</div><div class="hl-text">Symbolism. The use of an object or action to mean something more than its literal meaning. Authors use symbolism to convey messages poetically or indirectly, through their stories, making them more interesting and complex pieces.</div></div>
+        <div class="device-example">💡 The open window in "The Story of an Hour" symbolizes freedom and new possibilities.</div>
+        <span class="device-tag">FIGURATIVE LANGUAGE</span>
+      </div>
+    </div>
+    <div class="device-card" style="--dc-color:#7eb8f7" onclick="toggleDevice(this)">
+      <div class="dc-icon">🔵</div>
+      <h3>Metaphor</h3>
+      <div class="dc-one-liner">A direct comparison without "like" or "as."</div>
+      <div class="device-expand">
+        <div class="hl-box"><div class="hl-label">DEFINITION</div><div class="hl-text">A direct comparison between two unlike things. Example from "Hilary's Aunt": "Hilary's sun shone again" — without money he lives in darkness but with financial security his life becomes bright. Money resembles the sun that shines and enlightens his life.</div></div>
+        <div class="device-example">💡 "Time is a thief." No "like" or "as" — it states one thing IS another.</div>
+        <span class="device-tag">FIGURATIVE LANGUAGE</span>
+      </div>
+    </div>
+    <div class="device-card" style="--dc-color:#fb923c" onclick="toggleDevice(this)">
+      <div class="dc-icon">⚓</div>
+      <h3>Simile</h3>
+      <div class="dc-one-liner">A comparison using "like" or "as."</div>
+      <div class="device-expand">
+        <div class="hl-box"><div class="hl-label">DEFINITION + EXAMPLE FROM YOUR NOTES</div><div class="hl-text">He felt like a sailor who had reached harbor: without money Hilary resembles a sailor in the sea during a storm and after securing money he became safe like a sailor who had reached harbor.</div></div>
+        <div class="device-example">💡 "My love is like a rose" — uses "like" to draw a comparison.</div>
+        <span class="device-tag">FIGURATIVE LANGUAGE</span>
+      </div>
+    </div>
+    <div class="device-card" style="--dc-color:#f0c060" onclick="toggleDevice(this)">
+      <div class="dc-icon">🌬</div>
+      <h3>Personification</h3>
+      <div class="dc-one-liner">Giving human qualities to non-human things.</div>
+      <div class="device-expand">
+        <div class="hl-box"><div class="hl-label">EXAMPLES FROM YOUR NOTES</div><div class="hl-text">Australia did not like Hilary. / Fate has found a home for him.</div></div>
+        <div class="device-example">💡 A country or abstract concept (Australia, Fate) is given a human quality — liking or finding.</div>
+        <span class="device-tag">FIGURATIVE LANGUAGE</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ POV ════════════ -->
+<div id="sec-pov" class="section">
+  <div class="section-header">
+    <div class="section-tag">Element 7 · Short Story</div>
+    <div class="section-title">Narrator & <span>Point of View</span></div>
+    <div class="section-sub">Switch between perspectives and watch how the same story changes completely.</div>
+  </div>
+  <div class="hl-box pulse"><div class="hl-label">DEFINITION</div><div class="hl-text">The point of view of a story is usually the angle from which the author tells his or her story. It is usually expressed in either the first person, second person, or third person.</div></div>
+
+  <div class="divider"></div>
+  <h3 style="font-family:'Playfair Display',serif;margin-bottom:14px">Live POV Simulator — Same Scene, 4 Perspectives</h3>
+  <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px">The scene: <em>Louise hears the news of her husband's death and walks to her room.</em></p>
+
+  <div class="pov-tabs">
+    <button class="pov-tab active" onclick="showPOV('first',this)">👤 1st Person</button>
+    <button class="pov-tab" onclick="showPOV('second',this)">🫵 2nd Person</button>
+    <button class="pov-tab" onclick="showPOV('third-limited',this)">🔭 3rd Limited</button>
+    <button class="pov-tab" onclick="showPOV('third-omni',this)">🌐 3rd Omniscient</button>
+  </div>
+
+  <div class="pov-stage" id="pov-stage" data-pov-label="1st Person">
+    <p id="pov-text"><em>I heard the news and felt my knees go weak. My heart, already fragile, seemed to pause inside my chest. I walked to my room alone, sat by the open window, and let the tears come — and then something else came too, something I had not expected: a feeling like wide open air.</em></p>
+  </div>
+
+  <div class="pov-def-row">
+    <div class="pov-def-card">
+      <div class="pov-name">👤 First Person</div>
+      <div class="hl-box" style="margin:6px 0 0"><div class="hl-text">In the first person point of view, the author or narrator tells his or her story; it is mostly used in autobiographical or eyewitness reports.</div></div>
+    </div>
+    <div class="pov-def-card">
+      <div class="pov-name">🫵 Second Person</div>
+      <div class="hl-box" style="margin:6px 0 0"><div class="hl-text">The second person point of view is rarely used in narratives.</div></div>
+    </div>
+    <div class="pov-def-card">
+      <div class="pov-name">🔭 Third Person Limited</div>
+      <div class="hl-box" style="margin:6px 0 0"><div class="hl-text">In the third person limited, the narrator is usually not included as a character in the story. He or she is detached from the story.</div></div>
+    </div>
+    <div class="pov-def-card">
+      <div class="pov-name">🌐 Third Person Omniscient</div>
+      <div class="hl-box" style="margin:6px 0 0"><div class="hl-text">In the third person omniscient, the character is fully involved in the story. He or she is able to see everything that is going on in the minds of the characters.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ STORY 1 ════════════ -->
+<div id="sec-story1" class="section">
+  <div class="section-header">
+    <div class="section-tag">Critical Analysis · Story 1</div>
+    <div class="section-title">"The Story of <span>An Hour</span>"</div>
+    <div class="section-sub">By Kate Chopin — A masterpiece of irony, freedom, and the psychology of marriage in the 19th century.</div>
+  </div>
+
+  <div class="pill-nav">
+    <button class="pill active" onclick="showStoryPanel('s1','s1-plot',this)">🏔 Plot</button>
+    <button class="pill" onclick="showStoryPanel('s1','s1-char',this)">👤 Character</button>
+    <button class="pill" onclick="showStoryPanel('s1','s1-conflict',this)">⚔️ Conflict</button>
+    <button class="pill" onclick="showStoryPanel('s1','s1-theme',this)">💡 Theme</button>
+    <button class="pill" onclick="showStoryPanel('s1','s1-setting',this)">🌍 Setting</button>
+    <button class="pill" onclick="showStoryPanel('s1','s1-style',this)">✍️ Style</button>
+    <button class="pill" onclick="showStoryPanel('s1','s1-imagery',this)">🎨 Imagery</button>
+    <button class="pill" onclick="showStoryPanel('s1','s1-pov',this)">👁 POV</button>
+  </div>
+
+  <div id="s1-plot" class="story-panel active">
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+        <div class="tl-label">Stage 1 · Exposition</div><h4>Meeting Louise Mallard</h4>
+        <div class="hl-box"><div class="hl-text">We are introduced to Mrs. Louise Mallard, a woman with heart trouble.</div></div>
+        <div class="hl-box"><div class="hl-text">Her sister Josephine and her husband's friend Richards bring the news that Brently Mallard has died in a railroad accident.</div></div>
+        <div class="hl-box"><div class="hl-text">They tell her the news carefully because of her weak heart.</div></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-dot" style="border-color:var(--acc)"></div><div class="tl-content">
+        <div class="tl-label">Stage 2 · Rising Action</div><h4>The unexpected emotion</h4>
+        <div class="hl-box"><div class="hl-text">Louise cries immediately after hearing the news.</div></div>
+        <div class="hl-box"><div class="hl-text">She goes to her room alone and sits by the open window.</div></div>
+        <div class="hl-box"><div class="hl-text">She notices signs of spring and new life outside (fresh air, blue sky, birds singing).</div></div>
+        <div class="hl-box"><div class="hl-text">Gradually she realizes she feels something unexpected: a sense of freedom.</div></div>
+        <div class="hl-box"><div class="hl-text">She begins whispering: "Free, free, free!"</div></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-dot" style="border-color:var(--acc5)"></div><div class="tl-content">
+        <div class="tl-label">Stage 3 · Climax — Turning Point</div><h4>The moment of full realization</h4>
+        <div class="hl-box"><div class="hl-label">CLIMAX EXPLANATION</div><div class="hl-text">The climax occurs when Louise fully understands that she is free from the restrictions of marriage and begins to imagine a new life where she can live for herself.</div></div>
+        <div class="hl-box"><div class="hl-text">In "The Story of an Hour," the climax occurs when Louise Mallard fully realizes that she is free after her husband's death.</div></div>
+        <div class="hl-box"><div class="hl-text">While sitting alone in her room and looking out of the window, she suddenly understands her new feeling and begins to whisper: "Free, free, free!"</div></div>
+        <div class="hl-box"><div class="hl-text">At this moment: Louise understands that her husband's death means personal freedom for her. She imagines a future where she can live for herself. Her emotions change from sadness to excitement and hope.</div></div>
+        <div class="hl-box"><div class="hl-text">This moment is the emotional peak of the story, because it reveals the central theme: a woman's desire for independence.</div></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-dot" style="border-color:var(--acc3)"></div><div class="tl-content">
+        <div class="tl-label">Stage 4 · Falling Action</div><h4>Descending toward the ending</h4>
+        <div class="hl-box"><div class="hl-text">Louise opens the door and joins Josephine.</div></div>
+        <div class="hl-box"><div class="hl-text">She goes downstairs feeling confident and victorious about her new future.</div></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-dot" style="border-color:var(--acc4)"></div><div class="tl-content">
+        <div class="tl-label">Stage 5 · Resolution — The Twist</div><h4>The devastating ending</h4>
+        <div class="hl-box"><div class="hl-text">Brently Mallard suddenly enters the house alive.</div></div>
+        <div class="hl-box"><div class="hl-text">He was not involved in the accident.</div></div>
+        <div class="hl-box"><div class="hl-text">Louise collapses and dies.</div></div>
+        <div class="hl-box"><div class="hl-text">The doctors say she died from "the joy that kills."</div></div>
+      </div></div>
+    </div>
+  </div>
+
+  <div id="s1-char" class="story-panel">
+    <div class="hl-box pulse"><div class="hl-label">CHARACTERIZATION</div><div class="hl-text">Louise Mallard is the main character (protagonist) of the story. Louise Mallard is considered a round character.</div></div>
+    <div class="cards-grid">
+      <div class="card" style="--card-accent:linear-gradient(90deg,#f0c060,#fb923c)">
+        <div class="card-icon">🦸‍♀️</div><h3>Protagonist</h3>
+        <p>Louise is at the centre of every event. Everything in the story revolves around her emotional journey — from grief to liberation to death.</p>
+        <span class="card-tag">MAIN CHARACTER</span>
+      </div>
+      <div class="card" style="--card-accent:linear-gradient(90deg,#a78bfa,#7eb8f7)">
+        <div class="card-icon">🌀</div><h3>Round / Dynamic</h3>
+        <p>She undergoes a profound internal transformation within a single hour — from grieving widow to woman who tastes freedom for the first time.</p>
+        <span class="card-tag">COMPLEX CHARACTER</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="s1-conflict" class="story-panel">
+    <div class="hl-box pulse"><div class="hl-label">CONFLICT OVERVIEW</div><div class="hl-text">Conflict is the struggle between opposing forces in a story. In this short story, the main conflict is internal.</div></div>
+    <div class="accordion">
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🧠 Internal Conflict (Main) — Louise vs. Herself</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">Louise experiences a psychological struggle after hearing that her husband has died.</div></div>
+          <div class="hl-box"><div class="hl-text">At first, she feels sadness and grief.</div></div>
+          <div class="hl-box"><div class="hl-text">Then she begins to feel relief and freedom.</div></div>
+          <div class="hl-box"><div class="hl-text">She struggles to understand these conflicting emotions.</div></div>
+          <div class="hl-box"><div class="hl-text">This inner struggle shows her desire for independence versus her expected role as a devoted wife.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🌍 External Conflict (Implied) — Louise vs. Society</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">The story suggests that marriage and social expectations limit women's freedom.</div></div>
+          <div class="hl-box"><div class="hl-text">Louise realizes that during marriage someone else's will was often imposed on her life, even if her husband was kind.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s1-theme" class="story-panel">
+    <div class="accordion">
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🕊️ 1. Freedom and Independence (Main Theme)</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">The most important theme is a woman's desire for personal freedom.</div></div>
+          <div class="hl-box"><div class="hl-text">After hearing about her husband's death, Louise Mallard realizes she can live for herself and make her own decisions. She feels that marriage limited her independence.</div></div>
+          <div class="hl-box"><div class="hl-text">"Free, free, free!" — This shows her excitement about having control over her own life.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>⛓️ 2. Marriage and Oppression</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">The story suggests that marriage in the 19th century could restrict women's freedom, even if the husband was kind.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🎭 3. Irony of Life</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">The ending shows strong irony. The doctors believe Louise died from joy, but the reader understands that she died because her freedom suddenly disappeared.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s1-setting" class="story-panel">
+    <div class="accordion">
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>📍 1. Place — The Mallard House</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">Most of the story takes place in the Mallards' house, especially in Louise Mallard's bedroom.</div></div>
+          <div class="hl-box"><div class="hl-text">Louise sits in a comfortable armchair near an open window.</div></div>
+          <div class="hl-box"><div class="hl-text">The window allows her to see the sky, trees, and the world outside, which symbolizes freedom and new life.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🕐 2. Time — One Hour & The 19th Century</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">The events of the story happen in about one hour, which explains the title "The Story of an Hour."</div></div>
+          <div class="hl-box"><div class="hl-text">The story is also set in the late 19th century, a time when women had limited freedom in marriage and society.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🌡 3. Atmosphere — Three Stages</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-label">BEGINNING</div><div class="hl-text">Sadness and shock after hearing the news of the husband's death.</div></div>
+          <div class="hl-box"><div class="hl-label">MIDDLE</div><div class="hl-text">Hope and excitement as Louise realizes her freedom.</div></div>
+          <div class="hl-box"><div class="hl-label">ENDING</div><div class="hl-text">Sudden shock and tragedy.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s1-style" class="story-panel">
+    <div class="hl-box pulse"><div class="hl-label">LANGUAGE</div><div class="hl-text">The language of the story is simple, clear, and descriptive, but it also expresses deep emotions and psychological ideas.</div></div>
+    <div class="hl-box"><div class="hl-text">Chopin describes nature and the environment outside the window. These descriptions reflect Louise's emotional transformation.</div></div>
+    <div class="hl-box"><div class="hl-label">STRUCTURE</div><div class="hl-text">The structure of a story is the way its events are organized and presented. In this short story, Chopin uses a tight, linear structure that reflects the psychological journey of Louise Mallard. The story follows a chronological order, taking place over about one hour.</div></div>
+    <div class="accordion" style="margin-top:16px">
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🔵 Metaphor — "The Open Window and Sky"</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-label">METAPHORICAL MEANING</div><div class="hl-text">The open window and open sky act as a metaphor for new possibilities, freedom, and the vast potential of life outside societal restrictions.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>✨ Metaphor — "Drink from the elixir of life"</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-label">METAPHORICAL MEANING</div><div class="hl-text">Gaining renewal, immortality, or ultimate vitality. Achieving something that gives enduring happiness, wisdom, or fulfillment.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🪟 Symbolism — The Open Window</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-label">SYMBOLIC MEANING</div><div class="hl-text">Represents freedom and opportunity. Suggests the new life Louise could have without marital constraints. The window connects Louise to the world outside, symbolizing possibilities and independence.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🌸 Symbolism — Springtime / Nature</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-label">SYMBOLIC MEANING</div><div class="hl-text">Renewal, hope, and new beginnings. Mirrors Louise's emotional awakening and sense of liberation.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🎭 Situational Irony — "The Joy That Kills"</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-label">SITUATIONAL IRONY</div><div class="hl-text">The doctors say Louise dies of "joy that kills," but the reader knows that it's from the shock and despair of losing her brief taste of freedom.</div></div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)"><span>🔁 Repetition — "Free, free, free!"</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">The most famous repetition in the story is: "Free, free, free!"</div></div>
+          <div class="hl-box"><div class="hl-text">The word "free" is repeated three times.</div></div>
+          <div class="hl-box"><div class="hl-text">This emphasizes Louise's overwhelming feeling of liberation after realizing her husband has died.</div></div>
+          <div class="hl-box"><div class="hl-text">It shows the intensity of her emotional transformation in that moment.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s1-imagery" class="story-panel">
+    <div class="accordion">
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>👁 Visual Imagery</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">"The tops of trees that were all aquiver with the new spring life." / "Blue sky showing here and there through the clouds."</div></div></div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>🔊 Auditory Imagery</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">"The notes of a distant song which someone was singing reached her faintly." / "A peddler was crying his wares."</div></div></div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>👃 Olfactory Imagery</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">"The delicious breath of rain was in the air."</div></div></div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>💨 Motion Imagery</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">"The tops of trees that were all aquiver with the new spring life."</div></div>
+          <div class="hl-box"><div class="hl-text">Purpose: Emphasizes energy, growth, and dynamic freedom.</div></div>
+        </div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>❤️ Emotional Imagery</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">The open window, the sky, and the rain symbolize freedom, possibility, and emotional release.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s1-pov" class="story-panel">
+    <div class="hl-box pulse"><div class="hl-label">POINT OF VIEW</div><div class="hl-text">In Kate Chopin's "The Story of an Hour," the narration is a sophisticated Third-Person Omniscient point of view, though it is "selective" or "limited" in how it focuses on the protagonist, Louise Mallard.</div></div>
+    <div class="hl-box"><div class="hl-text">The narrator stands outside the action but has access to the internal thoughts and feelings of the characters—specifically Louise.</div></div>
+    <div class="cards-grid">
+      <div class="card" style="--card-accent:linear-gradient(90deg,#7eb8f7,#a78bfa)">
+        <div class="card-icon">🔭</div><h3>Third-Person Omniscient (Selective)</h3>
+        <p>The narrator is outside the story but can read Louise's mind completely, sharing her most private thoughts and feelings.</p>
+      </div>
+      <div class="card" style="--card-accent:linear-gradient(90deg,#34d399,#7eb8f7)">
+        <div class="card-icon">🎯</div><h3>Strategic Focus</h3>
+        <p>Though omniscient, the narrator chooses to focus almost entirely on Louise — creating intimacy with her psychology while keeping other characters distant.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ STORY 2 ════════════ -->
+<div id="sec-story2" class="section">
+  <div class="section-header">
+    <div class="section-tag">Critical Analysis · Story 2</div>
+    <div class="section-title">"<span>Hilary's</span> Aunt"</div>
+    <div class="section-sub">A dark, suspenseful mystery about greed, inheritance, and a shocking twist — where the intended victim has the last word.</div>
+  </div>
+
+  <div class="pill-nav">
+    <button class="pill active" onclick="showStoryPanel('s2','s2-plot',this)">🏔 Plot</button>
+    <button class="pill" onclick="showStoryPanel('s2','s2-char',this)">👤 Character</button>
+    <button class="pill" onclick="showStoryPanel('s2','s2-conflict',this)">⚔️ Conflict</button>
+    <button class="pill" onclick="showStoryPanel('s2','s2-theme',this)">💡 Theme</button>
+    <button class="pill" onclick="showStoryPanel('s2','s2-style',this)">✍️ Style</button>
+    <button class="pill" onclick="showStoryPanel('s2','s2-imagery',this)">🎨 Imagery</button>
+    <button class="pill" onclick="showStoryPanel('s2','s2-pov',this)">👁 POV</button>
+  </div>
+
+  <div id="s2-plot" class="story-panel active">
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+        <div class="tl-label">Stage 1 · Exposition</div><h4>Setting the scene</h4>
+        <p style="color:var(--muted);font-size:.83rem">We are introduced to Hilary and his ailing aunt — and his desperate financial situation.</p>
+      </div></div>
+      <div class="tl-item"><div class="tl-dot" style="border-color:var(--acc)"></div><div class="tl-content">
+        <div class="tl-label">Stage 2 · Rising Action</div><h4>The plan forms</h4>
+        <div class="hl-box"><div class="hl-label">INCITING INCIDENT</div><div class="hl-text">The doctor informs Hilary that his aunt is terminally ill.</div></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-dot" style="border-color:var(--acc5)"></div><div class="tl-content">
+        <div class="tl-label">Stage 3 · Climax — The Twist</div><h4>The confrontation</h4>
+        <div class="hl-box"><div class="hl-text">The Climax occurs when Hilary presents the "medicated" drink to his aunt.</div></div>
+        <div class="hl-box"><div class="hl-label">THE TWIST</div><div class="hl-text">The aunt reveals she is fully aware of Hilary's murderous intentions and his selfish greed. She proves to be far more intelligent than he imagined.</div></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-dot" style="border-color:var(--acc3)"></div><div class="tl-content">
+        <div class="tl-label">Stage 4 · Falling Action</div><h4>The aunt's extraordinary choice</h4>
+        <div class="hl-box"><div class="hl-text">Despite knowing it is poisoned, the aunt drinks the medicine anyway.</div></div>
+        <div class="hl-box"><div class="hl-text">She consciously decides to take the overdose, turning the murder into a form of passive suicide, thereby denying Hilary the satisfaction of actively killing her.</div></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-dot" style="border-color:var(--acc4)"></div><div class="tl-content">
+        <div class="tl-label">Stage 5 · Resolution</div><h4>Justice on her terms</h4>
+        <div class="hl-box"><div class="hl-text">Outcome: The aunt dies as planned, but not on Hilary's terms.</div></div>
+      </div></div>
+    </div>
+  </div>
+
+  <div id="s2-char" class="story-panel">
+    <div class="hl-box pulse"><div class="hl-label">CHARACTERIZATION</div><div class="hl-text">Hilary is a round character because he is complex, morally conflicted, and rationalizes his crime as kindness.</div></div>
+    <div class="cards-grid">
+      <div class="card" style="--card-accent:linear-gradient(90deg,#f87171,#fb923c)">
+        <div class="card-icon">🎭</div><h3>Hilary — Protagonist (Villain)</h3>
+        <p>A complex, morally conflicted character who is both the story's protagonist and its primary antagonist force. He rationalizes his crime as kindness.</p>
+        <span class="card-tag">ROUND CHARACTER</span>
+      </div>
+      <div class="card" style="--card-accent:linear-gradient(90deg,#34d399,#7eb8f7)">
+        <div class="card-icon">👵</div><h3>The Aunt — True Protagonist</h3>
+        <p>Appears to be the victim but is revealed to be the wisest and most powerful character — she turns Hilary's murder into her own choice.</p>
+        <span class="card-tag">DECEPTIVELY POWERFUL</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="s2-conflict" class="story-panel">
+    <div class="hl-box pulse"><div class="hl-label">CONFLICT OVERVIEW</div><div class="hl-text">Conflict is the struggle between opposing forces in a story. In this short story, the main conflict is internal.</div></div>
+    <div class="accordion">
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>🌍 External Conflict (Man vs. Society/Law)</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">The most prominent conflict is external.</div></div></div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>🧠 Internal Conflict (Man vs. Self)</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">While the plot focuses on the execution of the plan, there is a subtle undercurrent of internal struggle within Hilary.</div></div>
+          <div class="hl-box"><div class="hl-text">Hilary has to convince himself that he is performing an act of kindness rather than a cold-blooded crime.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s2-theme" class="story-panel">
+    <div class="accordion">
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>💰 Greed and Inheritance</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">Greed and Inheritance: The driving force behind Hilary's actions is entirely financial — he wants to inherit his aunt's wealth before she can change her will.</div></div></div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>🌑 Moral Decay and Suspense</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">Moral Decay and Suspense: The story shows how financial desperation can corrupt a person's moral compass, creating psychological suspense.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s2-style" class="story-panel">
+    <div class="accordion">
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>☀️ Metaphor — "Hilary's sun shone again"</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">Hilary's sun shone again: Without money he lives in darkness but with the financial security his life becomes bright. Thus, money resembles the sun that shines and enlightens his life.</div></div></div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>⚓ Simile — "like a sailor who had reached harbor"</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">He felt like a sailor who had reached harbor: without money Hilary resembles a sailor in the sea during a storm and after securing money he became safe like a sailor who had reached harbor.</div></div></div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>🌍 Personification</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">Australia did not like Hilary</div></div>
+          <div class="hl-box"><div class="hl-text">Fate has found a home for him.</div></div>
+        </div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>🎭 Situational Irony</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">Situational Irony occurs when something happens which is totally different from what is expected. Hilary planned to get rid of his aunt before changing her will to inherit her money. The irony occurred in the last situation between them when his aunt discovered his plan and explained that if she died that night he would inherit nothing. She agreed to drink the medicine and he lost her money.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s2-imagery" class="story-panel">
+    <div class="accordion">
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>🏥 Clinical and Medical Imagery</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">Since the plot revolves around a "mercy killing," the imagery is heavily colored by the sickroom.</div></div></div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>⚖️ Legalistic Imagery</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body">
+          <div class="hl-box"><div class="hl-text">Hilary perceives the world through a lens of evidence and procedure.</div></div>
+          <div class="hl-box"><div class="hl-text">The "Perfect Crime": Hilary sees his plan as a perfectly constructed building where every brick must fit perfectly.</div></div>
+        </div>
+      </div>
+      <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span>🏠 Domestic and "Cozy" Imagery</span><span class="acc-icon">▼</span></button>
+        <div class="acc-body"><div class="hl-box"><div class="hl-text">Hare uses "Cozy Mystery" tropes to create a sense of false security.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s2-pov" class="story-panel">
+    <div class="hl-box pulse"><div class="hl-label">NARRATOR & POINT OF VIEW</div><div class="hl-text">Third-Person Limited</div></div>
+    <div class="hl-box"><div class="hl-text">The story is told from a third-person perspective, but the "lens" is strictly limited to the protagonist, Hilary.</div></div>
+    <div class="hl-box"><div class="hl-text">Limited Scope: The narrator does not enter the minds of the Aunt, the doctor, or the servants. This is a strategic choice by Hare; if we knew what the Aunt was thinking, the final twist would be ruined.</div></div>
+  </div>
+</div>
+
+<!-- ════════════ POETRY ════════════ -->
+<div id="sec-poetry" class="section">
+  <div class="section-header">
+    <div class="section-tag">Poetry Analysis</div>
+    <div class="section-title"><span>Elements of Poetry</span></div>
+    <div class="section-sub">Click any module to expand it. Poetry uses language in its most concentrated form.</div>
+  </div>
+  <div class="hl-box pulse"><div class="hl-label">SECTION HEADER — FROM YOUR NOTES</div><div class="hl-text">Elements of Poetry</div></div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">💡</div>
+    <div><div class="pm-title">1. Theme</div><div class="pm-sub">The central idea or underlying message</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body"><div class="hl-box"><div class="hl-text">The central idea or underlying message of the poem.</div></div><p style="color:var(--muted);font-size:.83rem;margin-top:8px">Like in fiction, theme is what the poem is <em>really</em> about beneath its surface subject.</p></div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">🗣</div>
+    <div><div class="pm-title">2. Speaker</div><div class="pm-sub">The "voice" talking in the poem</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body"><div class="hl-box"><div class="hl-text">The "voice" talking in the poem (not always the poet).</div></div><p style="color:var(--muted);font-size:.83rem;margin-top:8px">The speaker is a persona — a character created by the poet, much like a narrator in fiction.</p></div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">😤</div>
+    <div><div class="pm-title">3. Tone</div><div class="pm-sub">The speaker's attitude toward the subject</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body"><div class="hl-box"><div class="hl-text">The speaker's attitude toward the subject.</div></div><p style="color:var(--muted);font-size:.83rem;margin-top:8px">Tone is the emotional quality of the speaker's voice: angry, joyful, melancholic, ironic, reverent, etc.</p></div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">😔</div>
+    <div><div class="pm-title">4. Mood</div><div class="pm-sub">The feeling the poem creates in the reader</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body">
+      <div class="hl-box"><div class="hl-text">The feeling the poem creates in the reader.</div></div>
+      <p style="color:var(--muted);font-size:.83rem;margin-top:8px">Mood is what <em>you</em> feel as you read — the atmosphere the poem wraps around you.</p>
+      <table class="comp-table" style="margin-top:12px">
+        <thead><tr><th>Element</th><th>Who Feels It?</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">Tone</span></td><td>The <strong>Speaker</strong></td><td>Speaker's attitude toward subject</td></tr>
+          <tr><td><span class="tag">Mood</span></td><td>The <strong>Reader</strong></td><td>Feeling created in the reader</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">🎨</div>
+    <div><div class="pm-title">5. Imagery</div><div class="pm-sub">Descriptive language appealing to the senses</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body">
+      <div class="hl-box"><div class="hl-text">Descriptive language that appeals to the senses: Sight, Sound, Smell, Taste, Touch.</div></div>
+      <div class="cards-grid" style="margin-top:12px">
+        <div class="card" style="--card-accent:linear-gradient(90deg,#7eb8f7,#a78bfa);padding:13px"><div class="card-icon" style="font-size:1.1rem">👁</div><h3 style="font-size:.85rem">Visual (Sight)</h3><p style="font-size:.75rem">Colors, shapes, light, movement</p></div>
+        <div class="card" style="--card-accent:linear-gradient(90deg,#34d399,#7eb8f7);padding:13px"><div class="card-icon" style="font-size:1.1rem">👂</div><h3 style="font-size:.85rem">Auditory (Sound)</h3><p style="font-size:.75rem">Music, noise, silence</p></div>
+        <div class="card" style="--card-accent:linear-gradient(90deg,#f0c060,#fb923c);padding:13px"><div class="card-icon" style="font-size:1.1rem">👃</div><h3 style="font-size:.85rem">Olfactory (Smell)</h3><p style="font-size:.75rem">Scents and aromas</p></div>
+        <div class="card" style="--card-accent:linear-gradient(90deg,#f87171,#fb923c);padding:13px"><div class="card-icon" style="font-size:1.1rem">👅</div><h3 style="font-size:.85rem">Gustatory (Taste)</h3><p style="font-size:.75rem">Flavors and tastes</p></div>
+        <div class="card" style="--card-accent:linear-gradient(90deg,#a78bfa,#f87171);padding:13px"><div class="card-icon" style="font-size:1.1rem">✋</div><h3 style="font-size:.85rem">Tactile (Touch)</h3><p style="font-size:.75rem">Texture, temperature</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">🔤</div>
+    <div><div class="pm-title">6. Figurative Language</div><div class="pm-sub">Simile, metaphor, personification, hyperbole</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body">
+      <div class="hl-box"><div class="hl-text">Simile – comparison using "like" or "as" | Metaphor – direct comparison | Personification – giving human qualities to non-human things | Hyperbole – exaggeration | Symbolism – objects representing larger ideas | Allusion – reference to history, literature, religion, etc.</div></div>
+      <table class="comp-table" style="margin-top:10px">
+        <thead><tr><th>Figure</th><th>Meaning</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">Simile</span></td><td>Comparison using like/as</td><td>My love is like a rose</td></tr>
+          <tr><td><span class="tag">Metaphor</span></td><td>Direct comparison</td><td>Time is a thief.</td></tr>
+          <tr><td><span class="tag">Personification</span></td><td>Human traits to objects</td><td>The wind whispered</td></tr>
+          <tr><td><span class="tag">Hyperbole</span></td><td>Exaggeration</td><td>I cried a river</td></tr>
+          <tr><td><span class="tag">Symbolism</span></td><td>Object = idea</td><td>Road = life choices</td></tr>
+          <tr><td><span class="tag">Allusion</span></td><td>Reference to other work</td><td>She was a real Juliet</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">🖊</div>
+    <div><div class="pm-title">7. Diction (Word Choice)</div><div class="pm-sub">Formal/informal, connotations, denotations</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body"><div class="hl-box"><div class="hl-text">Formal or informal? Simple or complex? Emotional or neutral? Connotations (emotional meanings behind words).</div></div><p style="color:var(--muted);font-size:.83rem;margin-top:8px">Every word a poet chooses carries both a denotation (dictionary meaning) and a connotation (emotional association).</p></div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">🎵</div>
+    <div><div class="pm-title">8. Sound Devices</div><div class="pm-sub">Rhyme, alliteration, assonance, onomatopoeia</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body">
+      <div class="hl-box"><div class="hl-text">Sound devices create music in language. See the dedicated Sound Devices section for full details.</div></div>
+      <button class="btn btn-outline" onclick="goSection('sound')" style="margin-top:10px">Go to Sound Devices →</button>
+    </div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">🥁</div>
+    <div><div class="pm-title">9. Rhythm & Meter</div><div class="pm-sub">The beat of the poem</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body"><div class="hl-box"><div class="hl-text">9. Rhythm & Meter — The beat of the poem.</div></div><button class="btn btn-outline" onclick="goSection('poform')" style="margin-top:10px">Go to Rhythm & Form →</button></div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">📐</div>
+    <div><div class="pm-title">10. Structure & Form</div><div class="pm-sub">Stanzas, enjambment, end-stopped lines</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body"><div class="hl-box"><div class="hl-text">10. Structure & Form: Stanzas (groups of lines) | Line length | Enjambment (sentence continues to next line) | End-stopped lines (complete pause at line end) | Fixed forms (sonnet, haiku, free verse, etc.)</div></div></div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">👁</div>
+    <div><div class="pm-title">11. Point of View in Poetry</div><div class="pm-sub">First, second, third person speaker</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body">
+      <div class="hl-box"><div class="hl-label">FIRST PERSON</div><div class="hl-text">Definition: The speaker uses "I" or "we." Effect: Gives a personal perspective; the reader experiences the poem through the speaker's thoughts and feelings.</div></div>
+      <div class="hl-box"><div class="hl-label">SECOND PERSON</div><div class="hl-text">Definition: The speaker uses "you." Effect: Directly addresses the reader or another character, creating immediacy.</div></div>
+      <div class="hl-box"><div class="hl-label">THIRD PERSON</div><div class="hl-text">Definition: The speaker uses "he," "she," "they," or character names. Effect: Provides a more detached or observational perspective.</div></div>
+    </div>
+  </div>
+
+  <div class="poetry-module" onclick="togglePoetryModule(this)">
+    <div class="pm-icon">📜</div>
+    <div><div class="pm-title">12. Literary Context</div><div class="pm-sub">Historical period, cultural background, author's life</div></div>
+    <div class="pm-arrow">▶</div>
+    <div class="pm-body">
+      <div class="hl-box"><div class="hl-text">Historical period</div></div>
+      <div class="hl-box"><div class="hl-text">Cultural background</div></div>
+      <div class="hl-box"><div class="hl-text">Author's life (when relevant)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ SOUND DEVICES ════════════ -->
+<div id="sec-sound" class="section">
+  <div class="section-header">
+    <div class="section-tag">Poetry · Element 8</div>
+    <div class="section-title">Sound <span>Devices</span></div>
+    <div class="section-sub">Poetry is as much about sound as it is about meaning. These devices create music in language.</div>
+  </div>
+  <div class="cards-grid">
+    <div class="card" style="--card-accent:linear-gradient(90deg,#f0c060,#fb923c)">
+      <div class="card-icon">🎵</div><h3>1. Rhyme</h3>
+      <div class="hl-box" style="margin:10px 0 0"><div class="hl-text">Definition: Repetition of similar sounds at the end of words.</div></div>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#7eb8f7,#34d399)">
+      <div class="card-icon">🔤</div><h3>2. Rhyme Scheme</h3>
+      <div class="hl-box" style="margin:10px 0 0"><div class="hl-text">Definition: The pattern of rhymes in a poem, usually labeled with letters (ABAB, AABB, etc.).</div></div>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#a78bfa,#7eb8f7)">
+      <div class="card-icon">🅰️</div><h3>3. Alliteration</h3>
+      <div class="hl-box" style="margin:10px 0 0"><div class="hl-text">Definition: Repetition of the initial consonant sounds in nearby words.</div></div>
+      <p style="color:var(--muted);font-size:.77rem;margin-top:7px">💡 <em>"Peter Piper picked a peck"</em></p>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#34d399,#f0c060)">
+      <div class="card-icon">🔵</div><h3>4. Assonance</h3>
+      <div class="hl-box" style="margin:10px 0 0"><div class="hl-text">Definition: Repetition of vowel sounds in nearby words.</div></div>
+      <p style="color:var(--muted);font-size:.77rem;margin-top:7px">💡 <em>"The r<u>ai</u>n in Sp<u>ai</u>n st<u>ay</u>s m<u>ai</u>nly on the pl<u>ai</u>n"</em></p>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#fb923c,#f87171)">
+      <div class="card-icon">🔴</div><h3>5. Consonance</h3>
+      <div class="hl-box" style="margin:10px 0 0"><div class="hl-text">Definition: Repetition of consonant sounds, usually at the end of words, but can be anywhere.</div></div>
+    </div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#f87171,#a78bfa)">
+      <div class="card-icon">💥</div><h3>6. Onomatopoeia</h3>
+      <div class="hl-box" style="margin:10px 0 0"><div class="hl-text">Definition: Words that imitate natural sounds.</div></div>
+      <p style="color:var(--muted);font-size:.77rem;margin-top:7px">💡 <em>buzz, crash, sizzle, whisper, hiss</em></p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ RHYTHM & FORM ════════════ -->
+<div id="sec-poform" class="section">
+  <div class="section-header">
+    <div class="section-tag">Poetry · Elements 9–10</div>
+    <div class="section-title">Rhythm, Meter & <span>Form</span></div>
+    <div class="section-sub">The physical architecture of a poem — how its lines are built, grouped, and measured.</div>
+  </div>
+  <div class="hl-box pulse"><div class="hl-label">RHYTHM & METER</div><div class="hl-text">9. Rhythm & Meter — The beat of the poem.</div></div>
+  <div class="hl-box"><div class="hl-label">STRUCTURE & FORM</div><div class="hl-text">10. Structure & Form: Stanzas (groups of lines) | Line length | Enjambment (sentence continues to next line) | End-stopped lines (complete pause at line end) | Fixed forms (sonnet, haiku, free verse, etc.)</div></div>
+  <div class="cards-grid">
+    <div class="card" style="--card-accent:linear-gradient(90deg,#f0c060,#34d399)"><div class="card-icon">🥁</div><h3>Rhythm</h3><p>The musical beat or cadence — the pattern of stressed and unstressed syllables that gives poetry its flow.</p></div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#7eb8f7,#a78bfa)"><div class="card-icon">📏</div><h3>Meter</h3><p>A regular, measured pattern of rhythm. Most common in English: <strong>iambic pentameter</strong> — ten syllables per line, alternating unstressed and stressed.</p></div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#34d399,#7eb8f7)"><div class="card-icon">📦</div><h3>Stanza</h3><p>A group of lines in a poem — the equivalent of a paragraph in prose.</p></div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#a78bfa,#f87171)"><div class="card-icon">➡️</div><h3>Enjambment</h3><p>When a sentence or thought continues beyond the end of a line without a pause — creating momentum or surprise.</p></div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#fb923c,#f0c060)"><div class="card-icon">⏸</div><h3>End-Stopped Lines</h3><p>Lines that end with a natural pause — creating a sense of completeness at the end of each line.</p></div>
+    <div class="card" style="--card-accent:linear-gradient(90deg,#f87171,#fb923c)"><div class="card-icon">📐</div><h3>Fixed Forms</h3><p><strong>Sonnet</strong> (14 lines), <strong>Haiku</strong> (5-7-5 syllables), <strong>Free verse</strong> (no fixed meter or rhyme).</p></div>
+  </div>
+</div>
+
+<!-- ════════════ FLASHCARDS ════════════ -->
+<div id="sec-flashcards" class="section">
+  <div class="section-header">
+    <div class="section-tag">Practice Mode · +5 XP per card</div>
+    <div class="section-title">Interactive <span>Flashcards</span></div>
+    <div class="section-sub">Click the card to flip it. Each flip earns XP.</div>
+  </div>
+  <div class="fc-progress"><div class="fc-progress-fill" id="fc-prog-fill" style="width:2.5%"></div></div>
+  <div class="flashcard-wrap">
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="fc-front">
+        <h3 id="fc-term">Plot</h3>
+        <p id="fc-hint-front" style="color:var(--muted);font-size:.77rem;margin-top:7px">Click to reveal definition ↓</p>
+        <div class="fc-hint">Card <span id="fc-num">1</span> of <span id="fc-total">40</span></div>
+      </div>
+      <div class="fc-back">
+        <p id="fc-def">The main sequence of events that make up the story. The order of events, usually following Freytag's Pyramid.</p>
+        <div class="fc-hint">Click again to flip back ↑</div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-nav">
+    <button class="fc-btn" onclick="prevCard()">← Prev</button>
+    <button class="fc-btn" onclick="shuffleCards()">🔀 Shuffle</button>
+    <button class="fc-btn" onclick="nextCard()">Next →</button>
+  </div>
+  <div class="fc-count" id="fc-progress-label">Card 1 of 40</div>
+</div>
+
+<!-- ════════════ QUIZ ════════════ -->
+<div id="sec-quiz" class="section">
+  <div class="section-header">
+    <div class="section-tag">Practice Mode · +10 XP per correct answer</div>
+    <div class="section-title">Mini <span>Quiz</span></div>
+    <div class="section-sub">15 questions. Instant feedback on every answer.</div>
+  </div>
+  <div id="quiz-container" style="max-width:600px">
+    <div class="quiz-header">
+      <span class="quiz-num" id="quiz-num-label">Q1 / 15</span>
+      <div class="quiz-progress-wrap"><div class="quiz-progress-fill" id="quiz-prog" style="width:0%"></div></div>
+    </div>
+    <div class="quiz-q" id="quiz-q"></div>
+    <div class="quiz-options" id="quiz-opts"></div>
+    <div class="quiz-feedback" id="quiz-fb"></div>
+    <button class="btn btn-primary" id="quiz-next-btn" onclick="nextQuestion()" style="display:none">Next Question →</button>
+  </div>
+</div>
+
+<!-- ════════════ BADGES ════════════ -->
+<div id="sec-badges" class="section">
+  <div class="section-header">
+    <div class="section-tag">Gamification</div>
+    <div class="section-title"><span>Achievements</span></div>
+    <div class="section-sub">Earn badges by exploring sections and completing activities.</div>
+  </div>
+  <div style="margin-bottom:16px">
+    <span style="font-size:.85rem;color:var(--muted)">Total XP: </span>
+    <span style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--acc)" id="badge-xp-display">0</span>
+  </div>
+  <div class="badges-grid" id="badges-grid"></div>
+</div>
+
+<!-- ════════════ GLOSSARY ════════════ -->
+<div id="sec-glossary" class="section">
+  <div class="section-header">
+    <div class="section-tag">Reference</div>
+    <div class="section-title">Literary <span>Glossary</span></div>
+    <div class="section-sub">All key terms, searchable and filtered by category.</div>
+  </div>
+  <input type="text" class="gloss-search" id="gloss-search" placeholder="🔍 Search any term…" oninput="filterGlossary()">
+  <div class="gloss-filters" id="gloss-filters"></div>
+  <div class="gloss-grid" id="gloss-grid"></div>
+</div>
+
+</main>
+
+<!-- REVISION OVERLAY -->
+<div id="revision-overlay">
+  <div class="revision-box">
+    <button class="revision-close" onclick="closeRevision()">✕</button>
+    <h2 style="font-family:'Playfair Display',serif;margin-bottom:8px;color:var(--acc)">📋 Quick Revision</h2>
+    <p style="color:var(--muted);font-size:.82rem;margin-bottom:18px">Core highlighted definitions — perfect for last-minute review.</p>
+    <div id="revision-content"></div>
+  </div>
+</div>
+
+<!-- EXAM OVERLAY -->
+<div id="exam-overlay">
+  <div class="exam-box">
+    <h2 style="font-family:'Playfair Display',serif;margin-bottom:6px;color:var(--acc)">📝 Exam Preparation Mode</h2>
+    <p style="color:var(--muted);font-size:.82rem;margin-bottom:20px">Answer these exam-style questions to test your readiness.</p>
+    <div id="exam-content"></div>
+    <button class="btn btn-outline" onclick="closeExam()" style="margin-top:18px">Close ✕</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  STATE & XP SYSTEM
+// ═══════════════════════════════════════════
+const state = {
+  visited: new Set(['home']),
+  xp: 0,
+  level: 1,
+  quizScore: 0,
+  quizIdx: 0,
+  quizAnswered: false,
+  fcIdx: 0,
+  fcFlipped: false,
+  fcOrder: [],
+  badgesEarned: new Set(),
+  cardsFlipped: new Set()
+};
+const TOTAL_SECTIONS = 17;
+
+function addXP(amount, label) {
+  state.xp += amount;
+  updateXPDisplay();
+  showXPToast('+' + amount + ' XP ' + (label || '✨'));
+  checkLevelUp();
+  updateBadges();
+}
+
+function updateXPDisplay() {
+  const pct = Math.min((state.xp % 200) / 200 * 100, 100);
+  document.getElementById('xp-fill').style.width = pct + '%';
+  document.getElementById('xp-label-text').textContent = state.xp + ' XP';
+  document.getElementById('xp-level').textContent = 'Level ' + state.level;
+  document.getElementById('xp-chip-display').textContent = state.xp + ' XP';
+  const bd = document.getElementById('badge-xp-display');
+  if (bd) bd.textContent = state.xp;
+}
+
+function checkLevelUp() {
+  const newLevel = Math.floor(state.xp / 200) + 1;
+  if (newLevel > state.level) {
+    state.level = newLevel;
+    showXPToast('🎉 Level Up! Level ' + state.level);
+  }
+}
+
+let toastTimer;
+function showXPToast(msg) {
+  const t = document.getElementById('xp-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════
+//  PARTICLES
+// ═══════════════════════════════════════════
+(function() {
+  const c = document.getElementById('particles');
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'pt';
+    const sz = Math.random() * 3 + 1;
+    const colors = ['#f0c060','#7eb8f7','#a78bfa','#34d399'];
+    p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*4)]};animation-duration:${Math.random()*18+12}s;animation-delay:${Math.random()*18}s`;
+    c.appendChild(p);
+  }
+})();
+
+// ═══════════════════════════════════════════
+//  SCROLL INDICATOR
+// ═══════════════════════════════════════════
+document.getElementById('main').addEventListener('scroll', function() {
+  const el = document.querySelector('.section.active');
+  if (!el) return;
+  const scrolled = this.scrollTop;
+  const total = this.scrollHeight - this.clientHeight;
+  const pct = total > 0 ? scrolled / total : 0;
+  document.getElementById('scroll-ind').style.width = (pct * 100) + '%';
+});
+
+// ═══════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════
+const sectionTitles = {
+  home:'Home', plot:"Plot & Freytag's Pyramid", character:'Characterization',
+  conflict:'Conflict', theme:'Theme', setting:'Setting',
+  style:'Style & Literary Devices Lab', pov:'Narrator & Point of View',
+  story1:'"The Story of An Hour"', story2:'"Hilary\'s Aunt"',
+  poetry:'Elements of Poetry', sound:'Sound Devices',
+  poform:'Rhythm, Meter & Form', flashcards:'Flashcards',
+  quiz:'Mini Quiz', badges:'Achievements', glossary:'Glossary'
+};
+
+function goSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
+  const nav = document.querySelector(`.nav-item[onclick*="'${id}'"]`);
+  if (nav) nav.classList.add('active');
+  document.getElementById('topbar-title').textContent = sectionTitles[id] || id;
+  document.getElementById('main').scrollTop = 0;
+
+  const isNew = !state.visited.has(id);
+  state.visited.add(id);
+
+  if (isNew) {
+    addXP(10, '🗺 New section!');
+    // Trigger pulse on first hl-box in new section
+    setTimeout(() => {
+      const firstHl = sec && sec.querySelector('.hl-box');
+      if (firstHl) { firstHl.classList.add('pulse'); setTimeout(() => firstHl.classList.remove('pulse'), 3000); }
+    }, 400);
+  }
+
+  document.getElementById('stat-visited').textContent = state.visited.size;
+  updateBadges();
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round((state.visited.size / TOTAL_SECTIONS) * 100);
+  document.getElementById('xp-fill').style.width = Math.min((state.xp % 200) / 200 * 100, 100) + '%';
+}
+
+// ═══════════════════════════════════════════
+//  SIDEBAR & THEME
+// ═══════════════════════════════════════════
+let sidebarOpen = true;
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('collapsed', !sidebarOpen);
+  document.getElementById('main').classList.toggle('full', !sidebarOpen);
+  document.getElementById('topbar').classList.toggle('full', !sidebarOpen);
+}
+
+let currentTheme = 'dark';
+function toggleTheme() {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  document.getElementById('theme-btn').textContent = currentTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+}
+
+// ═══════════════════════════════════════════
+//  ACCORDION
+// ═══════════════════════════════════════════
+function toggleAcc(btn) {
+  const body = btn.nextElementSibling;
+  const open = body.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  if (open) addXP(2, '📖');
+}
+
+// ═══════════════════════════════════════════
+//  PYRAMID
+// ═══════════════════════════════════════════
+function showPyrStage(id) {
+  document.querySelectorAll('.pyr-detail-panel').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.pyr-stage').forEach(s => s.classList.remove('active-stage'));
+  const panel = document.getElementById('pyr-detail-' + id);
+  const stage = document.getElementById('ps-' + id);
+  if (panel) panel.classList.add('open');
+  if (stage) stage.classList.add('active-stage');
+  addXP(3, '🏔');
+}
+
+// ═══════════════════════════════════════════
+//  CHARACTERIZATION
+// ═══════════════════════════════════════════
+const charDefs = {
+  protagonist: { box: 'char-detail-box', html: '<div class="hl-box" style="margin:0"><div class="hl-label">FROM YOUR NOTES</div><div class="hl-text">One character is clearly central to the story with all major events having some importance to this character — he/she is the PROTAGONIST.</div></div>' },
+  antagonist: { box: 'char-detail-box', html: '<div class="hl-box" style="margin:0"><div class="hl-label">FROM YOUR NOTES</div><div class="hl-text">The opposite of the main character is called the ANTAGONIST.</div></div>' },
+  static: { box: 'char-detail-box2', html: '<div class="hl-box" style="margin:0"><div class="hl-label">FROM YOUR NOTES</div><div class="hl-text">Static, also called flat, means the character stays the same throughout the story. They do not change.</div></div>' },
+  dynamic: { box: 'char-detail-box2', html: '<div class="hl-box" style="margin:0"><div class="hl-label">FROM YOUR NOTES</div><div class="hl-text">Developing, also called dynamic, means the character changes. They play complex roles in stories. They are complex, dimensional, and well-developed.</div></div>' }
+};
+function selectChar(type) {
+  const def = charDefs[type];
+  if (!def) return;
+  const box = document.getElementById(def.box);
+  box.innerHTML = def.html;
+  box.style.borderColor = 'var(--acc)';
+  // Highlight selected card
+  const cards = box.previousElementSibling ? box.previousElementSibling.previousElementSibling : null;
+  addXP(3, '👤');
+}
+
+// ═══════════════════════════════════════════
+//  CONFLICT VISUALIZER
+// ═══════════════════════════════════════════
+const conflictTypes = {
+  charchar: { rightIcon:'🦹', rightTitle:'Another Person', rightDesc:'The protagonist faces a human adversary with opposing goals, values, or desires.', example:'Example from "The Story of an Hour": Louise\'s inner desires vs. the will of a husband — people representing opposing forces.' },
+  charnature: { rightIcon:'🌊', rightTitle:'Nature / Natural Forces', rightDesc:'The protagonist faces the raw power of the natural world: storms, animals, disease, wilderness.', example:'Example: A character fighting illness — like Louise\'s heart condition, or a sailor in a storm (as in the simile from "Hilary\'s Aunt").' },
+  charsociety: { rightIcon:'🏛', rightTitle:'Society / Culture / Law', rightDesc:'The protagonist struggles against social norms, institutional rules, or cultural expectations.', example:'Example: Louise Mallard vs. 19th-century marriage norms. She cannot live freely because society defines her role as wife.' },
+  charcirc: { rightIcon:'🎲', rightTitle:'Circumstances / Fate', rightDesc:'The protagonist battles the circumstances of life — poverty, fate, illness, or situations beyond control.', example:'Example: Hilary\'s desperate financial situation forces him toward a terrible moral decision. Circumstances have cornered him.' }
+};
+function showConflictType(type) {
+  const cf = conflictTypes[type];
+  if (!cf) return;
+  document.getElementById('cf-right-icon').textContent = cf.rightIcon;
+  document.getElementById('cf-right-title').textContent = cf.rightTitle;
+  document.getElementById('cf-right-desc').textContent = cf.rightDesc;
+  document.getElementById('cf-example').textContent = cf.example;
+  document.querySelectorAll('.cf-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  addXP(2, '⚔️');
+}
+// Initialize default
+document.addEventListener('DOMContentLoaded', () => {
+  const cf = conflictTypes.charchar;
+  document.getElementById('cf-right-icon').textContent = cf.rightIcon;
+  document.getElementById('cf-right-title').textContent = cf.rightTitle;
+  document.getElementById('cf-right-desc').textContent = cf.rightDesc;
+  document.getElementById('cf-example').textContent = cf.example;
+});
+
+// ═══════════════════════════════════════════
+//  LITERARY DEVICES
+// ═══════════════════════════════════════════
+function toggleDevice(card) {
+  const wasExpanded = card.classList.contains('expanded');
+  document.querySelectorAll('.device-card').forEach(c => c.classList.remove('expanded'));
+  if (!wasExpanded) {
+    card.classList.add('expanded');
+    addXP(3, '✍️');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  POV SIMULATOR
+// ═══════════════════════════════════════════
+const povData = {
+  'first': { label:'1st Person', text:'<em>I heard the news and felt my knees go weak. My heart, already fragile, seemed to pause inside my chest. I walked to my room alone, sat by the open window, and let the tears come — and then something else came too, something I had not expected: a feeling like wide open air.</em>' },
+  'second': { label:'2nd Person', text:'<em>You hear the news and feel your knees go weak. Your heart, which has always been fragile, seems to stop. You walk to your room alone, sit by the open window, and let yourself cry — and then, unexpectedly, you feel something: a vast, bright sense of possibility opening before you.</em>' },
+  'third-limited': { label:'3rd Person Limited', text:'<em>She heard the news and felt her knees go weak. She walked to her room alone and sat by the open window. She cried — and then, gradually, she became aware of something unexpected stirring inside her, something that frightened and thrilled her equally. She did not yet have a name for it.</em>' },
+  'third-omni': { label:'3rd Person Omniscient', text:'<em>She heard the news and felt her knees go weak. In the street below, a child was playing; a vendor called his wares; the sky was blue and generous. Inside her, grief and something she did not yet have a name for fought for space. Her husband\'s friend stood downstairs worrying about her heart — not knowing that it was not grief that threatened to stop it.</em>' }
+};
+function showPOV(id, btn) {
+  const d = povData[id];
+  if (!d) return;
+  const stage = document.getElementById('pov-stage');
+  stage.setAttribute('data-pov-label', d.label);
+  document.getElementById('pov-text').innerHTML = d.text;
+  document.querySelectorAll('.pov-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  addXP(2, '👁');
+}
+
+// ═══════════════════════════════════════════
+//  STORY PANELS
+// ═══════════════════════════════════════════
+function showStoryPanel(prefix, panelId, btn) {
+  document.querySelectorAll(`#sec-${prefix} .story-panel`).forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById(panelId);
+  if (panel) panel.classList.add('active');
+  // Update pills
+  const pills = btn ? btn.closest('.pill-nav') : null;
+  if (pills) pills.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  addXP(2, '📖');
+}
+
+// ═══════════════════════════════════════════
+//  POETRY MODULES
+// ═══════════════════════════════════════════
+function togglePoetryModule(mod) {
+  const wasOpen = mod.classList.contains('pm-open');
+  mod.classList.toggle('pm-open', !wasOpen);
+  if (!wasOpen) addXP(3, '🎵');
+}
+
+// ═══════════════════════════════════════════
+//  FLASHCARDS DATA
+// ═══════════════════════════════════════════
+const fcData = [
+  {term:'Plot',def:'The main sequence of events that make up the story. The order of events, usually following Freytag\'s Pyramid.'},
+  {term:'Exposition',def:'The opening of a story that introduces the major fictional elements — setting, characters, style. Ends with the inciting incident.'},
+  {term:'Inciting Incident',def:'The event that starts the main conflict of the story — how the exposition ends.'},
+  {term:'Rising Action',def:'Explores the story\'s conflict up until its climax. Things often "get worse" here.'},
+  {term:'Climax',def:'The point of greatest tension or intensity. The turning point where events take a major turn as the story races towards its conclusion.'},
+  {term:'Falling Action',def:'The writer explores the aftermath of the climax.'},
+  {term:'Resolution / Denouement',def:'The final stage where the loose ends of the climax and falling action are tied up. "Denouement" means "untying" in French.'},
+  {term:'Protagonist',def:'The main character — central to the story with all major events having some importance to this character.'},
+  {term:'Antagonist',def:'The opposite of the main character — an adversary who creates or is involved in the conflict.'},
+  {term:'Static (Flat) Character',def:'A character who stays the same throughout the story. They do not change.'},
+  {term:'Dynamic (Round) Character',def:'A character who changes throughout the story. They are complex, dimensional, and well-developed.'},
+  {term:'Conflict',def:'The struggle between two entities — essential to plot. Without conflict there is no plot.'},
+  {term:'Internal Conflict',def:'A struggle within one\'s self; a person must make some decision, overcome pain, quiet their temper, resist an urge, etc.'},
+  {term:'External Conflict',def:'A struggle with a force outside one\'s self — another person, nature, society, or circumstance.'},
+  {term:'Theme',def:'The main idea, lesson, or message in the short story. A hidden element, but incredibly important.'},
+  {term:'Setting',def:'A description of where and when the story takes place. In a short story there are fewer settings compared to a novel.'},
+  {term:'Style',def:'The manner in which an author expresses himself or herself in writing.'},
+  {term:'Allusion',def:'An indirect reference to another artistic work, person, event, or place.'},
+  {term:'Foreshadowing',def:'The use of hints or clues to suggest what will happen later in a literary work.'},
+  {term:'Verbal Irony',def:'When an author says one thing and means something else. What is said is actually the opposite of what is meant/intended.'},
+  {term:'Dramatic Irony',def:'When an audience perceives something that the characters don\'t know.'},
+  {term:'Situational Irony',def:'A contradiction between the expected result and the actual result — or between appearance and reality.'},
+  {term:'Symbolism',def:'The use of an object or action to mean something more than its literal meaning.'},
+  {term:'Point of View',def:'The angle from which the author tells the story — first person, second person, or third person.'},
+  {term:'First Person POV',def:'The narrator tells the story using "I" — mostly used in autobiographical or eyewitness reports.'},
+  {term:'Third Person Limited',def:'The narrator is not a character but follows one character\'s perspective closely.'},
+  {term:'Third Person Omniscient',def:'The narrator can see everything going on in the minds of all characters and tell their movement from stage to stage.'},
+  {term:'Tone',def:'The speaker\'s attitude toward the subject.'},
+  {term:'Mood',def:'The feeling the poem or story creates in the reader.'},
+  {term:'Imagery',def:'Descriptive language that appeals to the senses: sight, sound, smell, taste, and touch.'},
+  {term:'Simile',def:'A comparison using "like" or "as." Example: My love is like a rose.'},
+  {term:'Metaphor',def:'A direct comparison without "like" or "as." Example: Time is a thief.'},
+  {term:'Personification',def:'Giving human qualities to non-human things. Example: The wind whispered.'},
+  {term:'Hyperbole',def:'Deliberate exaggeration for effect. Example: I cried a river.'},
+  {term:'Alliteration',def:'Repetition of the initial consonant sounds in nearby words.'},
+  {term:'Assonance',def:'Repetition of vowel sounds in nearby words.'},
+  {term:'Consonance',def:'Repetition of consonant sounds, usually at the end of words.'},
+  {term:'Onomatopoeia',def:'Words that imitate natural sounds. Example: buzz, crash, sizzle, whisper.'},
+  {term:'Rhyme Scheme',def:'The pattern of rhymes in a poem, labeled with letters (ABAB, AABB, etc.).'},
+  {term:'Enjambment',def:'When a sentence or thought in a poem continues beyond the end of a line without a pause.'},
+];
+state.fcOrder = fcData.map((_, i) => i);
+
+function renderCard() {
+  const i = state.fcOrder[state.fcIdx];
+  const card = fcData[i];
+  document.getElementById('fc-term').textContent = card.term;
+  document.getElementById('fc-def').textContent = card.def;
+  document.getElementById('fc-num').textContent = state.fcIdx + 1;
+  document.getElementById('fc-total').textContent = state.fcOrder.length;
+  document.getElementById('fc-progress-label').textContent = `Card ${state.fcIdx + 1} of ${state.fcOrder.length}`;
+  document.getElementById('fc-prog-fill').style.width = ((state.fcIdx + 1) / state.fcOrder.length * 100) + '%';
+  const el = document.getElementById('flashcard');
+  el.classList.remove('flipped');
+  state.fcFlipped = false;
+}
+
+function flipCard() {
+  state.fcFlipped = !state.fcFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped', state.fcFlipped);
+  const cardKey = 'fc-' + state.fcOrder[state.fcIdx];
+  if (state.fcFlipped && !state.cardsFlipped.has(cardKey)) {
+    state.cardsFlipped.add(cardKey);
+    addXP(5, '🃏');
+  }
+}
+function nextCard() { state.fcIdx = (state.fcIdx + 1) % state.fcOrder.length; renderCard(); }
+function prevCard() { state.fcIdx = (state.fcIdx - 1 + state.fcOrder.length) % state.fcOrder.length; renderCard(); }
+function shuffleCards() {
+  for (let i = state.fcOrder.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [state.fcOrder[i], state.fcOrder[j]] = [state.fcOrder[j], state.fcOrder[i]];
+  }
+  state.fcIdx = 0; renderCard();
+}
+renderCard();
+
+// ═══════════════════════════════════════════
+//  QUIZ DATA & LOGIC
+// ═══════════════════════════════════════════
+const quizData = [
+  {q:"What is Freytag's Pyramid?",opts:['A geographic structure in Egypt','A five-part dramatic structure: exposition, rising action, climax, falling action, resolution','A type of poem with five stanzas','A method of character analysis'],ans:1},
+  {q:'What is the climax of a story?',opts:['The beginning where characters are introduced','The final resolution of all conflicts','The point of greatest tension where events take a major turn','The part where the antagonist wins'],ans:2},
+  {q:'In "The Story of an Hour," what does Louise whisper at the climax?',opts:['"Help me, Josephine!"','"I cannot believe this."','"Free, free, free!"','"He is alive!"'],ans:2},
+  {q:'What is a static (flat) character?',opts:['A character who changes dramatically','A character who stays the same throughout the story','A character without a name','A character who appears only once'],ans:1},
+  {q:'What does "verbal irony" mean?',opts:['When events turn out opposite to expectations','When the audience knows something characters don\'t','When an author says one thing and means something else','When characters speak in rhyme'],ans:2},
+  {q:'How does Kate Chopin narrate "The Story of an Hour"?',opts:['First Person — Louise tells her own story','Second Person — addressing the reader','Third Person Omniscient (selective) — focusing on Louise\'s inner world','Third Person Limited — only Josephine\'s perspective'],ans:2},
+  {q:'What is the main theme of "The Story of an Hour"?',opts:['The dangers of railroad travel','A woman\'s desire for personal freedom and independence','The importance of family loyalty','The cruelty of 19th-century medicine'],ans:1},
+  {q:'What does the open window symbolize in "The Story of an Hour"?',opts:['Louise\'s physical weakness','The outside world\'s dangers','Freedom, opportunity, and new life','Her love for her husband'],ans:2},
+  {q:'In "Hilary\'s Aunt," what type of irony occurs at the end?',opts:['Verbal irony','Dramatic irony','Situational irony','No irony'],ans:2},
+  {q:'What is the difference between Tone and Mood?',opts:['They are the same thing','Tone is the reader\'s feeling; Mood is the speaker\'s attitude','Tone is the speaker\'s attitude; Mood is the feeling created in the reader','Tone is about poetry only'],ans:2},
+  {q:'What is alliteration?',opts:['Repetition of vowel sounds in nearby words','Repetition of the initial consonant sounds in nearby words','Words that imitate natural sounds','Repetition of similar sounds at the end of words'],ans:1},
+  {q:'What is enjambment in poetry?',opts:['A complete pause at the end of a line','When a sentence continues beyond the end of a line without a pause','A type of rhyme scheme','A stanza with exactly five lines'],ans:1},
+  {q:'What point of view is used in "Hilary\'s Aunt"?',opts:['First Person — Hilary narrates','Third Person Omniscient','Third Person Limited — focused on Hilary','Second Person'],ans:2},
+  {q:'What is onomatopoeia?',opts:['Repetition of consonant sounds','An indirect reference to another work','Words that imitate natural sounds','A direct comparison between two things'],ans:2},
+  {q:'What is the speaker in a poem?',opts:['Always the poet himself/herself','The main character who acts in the poem\'s plot','The "voice" talking in the poem — not necessarily the poet','The person reading the poem aloud'],ans:2},
+];
+let quizOrder = quizData.map((_,i) => i);
+function shuffleQuiz() { for(let i=quizOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[quizOrder[i],quizOrder[j]]=[quizOrder[j],quizOrder[i]];} }
+shuffleQuiz();
+
+function renderQuestion() {
+  const q = quizData[quizOrder[state.quizIdx]];
+  document.getElementById('quiz-num-label').textContent = `Q${state.quizIdx + 1} / ${quizData.length}`;
+  document.getElementById('quiz-prog').style.width = (state.quizIdx / quizData.length * 100) + '%';
+  document.getElementById('quiz-q').textContent = q.q;
+  const opts = document.getElementById('quiz-opts');
+  opts.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.innerHTML = `<span class="quiz-opt-letter">${letters[i]}</span>${o}`;
+    btn.onclick = () => checkAnswer(i);
+    opts.appendChild(btn);
+  });
+  document.getElementById('quiz-fb').className = 'quiz-feedback';
+  document.getElementById('quiz-next-btn').style.display = 'none';
+  state.quizAnswered = false;
+}
+
+function checkAnswer(idx) {
+  if (state.quizAnswered) return;
+  state.quizAnswered = true;
+  const q = quizData[quizOrder[state.quizIdx]];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach((b, i) => {
+    b.classList.add('disabled');
+    if (i === q.ans) b.classList.add('correct');
+    else if (i === idx && idx !== q.ans) b.classList.add('wrong');
+  });
+  const fb = document.getElementById('quiz-fb');
+  if (idx === q.ans) {
+    state.quizScore++;
+    fb.className = 'quiz-feedback correct show';
+    fb.textContent = '✅ Correct! Well done.';
+    addXP(10, '🧠 Correct!');
+  } else {
+    fb.className = 'quiz-feedback wrong show';
+    fb.textContent = `❌ The correct answer is: "${q.opts[q.ans]}"`;
+  }
+  document.getElementById('quiz-next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+  state.quizIdx++;
+  if (state.quizIdx >= quizData.length) {
+    const pct = Math.round(state.quizScore / quizData.length * 100);
+    document.getElementById('quiz-container').innerHTML = `
+      <div style="text-align:center;padding:40px 0">
+        <div style="font-family:'Playfair Display',serif;font-size:3rem;color:var(--acc)">${state.quizScore}/${quizData.length}</div>
+        <div style="color:var(--muted);font-size:.88rem;margin-top:4px">${pct}% correct — ${pct>=80?'🏆 Excellent!':pct>=60?'👍 Good work!':'📚 Keep studying!'}</div>
+        <button class="btn btn-primary" onclick="restartQuiz()" style="margin-top:20px">Restart Quiz 🔄</button>
+      </div>`;
+    updateBadges();
+    return;
+  }
+  renderQuestion();
+}
+
+function restartQuiz() {
+  state.quizIdx = 0; state.quizScore = 0; state.quizAnswered = false;
+  shuffleQuiz();
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="quiz-header"><span class="quiz-num" id="quiz-num-label">Q1 / 15</span><div class="quiz-progress-wrap"><div class="quiz-progress-fill" id="quiz-prog" style="width:0%"></div></div></div>
+    <div class="quiz-q" id="quiz-q"></div>
+    <div class="quiz-options" id="quiz-opts"></div>
+    <div class="quiz-feedback" id="quiz-fb"></div>
+    <button class="btn btn-primary" id="quiz-next-btn" onclick="nextQuestion()" style="display:none">Next Question →</button>`;
+  renderQuestion();
+}
+renderQuestion();
+
+// ═══════════════════════════════════════════
+//  GLOSSARY
+// ═══════════════════════════════════════════
+const glossaryData = [
+  {term:'Plot',def:'The main sequence of events that make up the story.',cat:'plot'},
+  {term:'Freytag\'s Pyramid',def:'Five-part dramatic structure: exposition, rising action, climax, falling action, denouement.',cat:'plot'},
+  {term:'Exposition',def:'Opening stage that introduces setting, characters, style. Ends with inciting incident.',cat:'plot'},
+  {term:'Inciting Incident',def:'The event that starts the main conflict of the story.',cat:'plot'},
+  {term:'Climax',def:'Point of greatest tension. The turning point where events take a major turn.',cat:'plot'},
+  {term:'Denouement',def:'From French "untying." The final resolution where loose ends are tied up.',cat:'plot'},
+  {term:'Protagonist',def:'The main character — central to all major events in the story.',cat:'character'},
+  {term:'Antagonist',def:'The adversary who opposes the protagonist and drives the conflict.',cat:'character'},
+  {term:'Static Character',def:'A flat character who stays the same throughout the story.',cat:'character'},
+  {term:'Dynamic Character',def:'A round character who changes and develops — complex, dimensional.',cat:'character'},
+  {term:'Conflict',def:'The struggle between two entities — essential to plot.',cat:'conflict'},
+  {term:'Internal Conflict',def:'A struggle within one\'s self — decisions, pain, temptation, urges.',cat:'conflict'},
+  {term:'External Conflict',def:'A struggle with a force outside one\'s self.',cat:'conflict'},
+  {term:'Theme',def:'The main idea, lesson, or message in the story. Hidden but incredibly important.',cat:'theme'},
+  {term:'Setting',def:'A description of where and when the story takes place.',cat:'setting'},
+  {term:'Style',def:'The manner in which an author expresses himself or herself in writing.',cat:'style'},
+  {term:'Allusion',def:'An indirect reference to another artistic work, person, event, or place.',cat:'style'},
+  {term:'Foreshadowing',def:'The use of hints or clues to suggest what will happen later.',cat:'style'},
+  {term:'Irony',def:'An implied contradiction between what is said and what is meant.',cat:'style'},
+  {term:'Verbal Irony',def:'When an author says one thing and means something else — the opposite.',cat:'style'},
+  {term:'Dramatic Irony',def:'When the audience perceives something the characters don\'t know.',cat:'style'},
+  {term:'Situational Irony',def:'A contradiction between the expected result and the actual result.',cat:'style'},
+  {term:'Symbolism',def:'Using an object or action to mean something more than its literal meaning.',cat:'style'},
+  {term:'Point of View',def:'The angle from which the author tells the story.',cat:'pov'},
+  {term:'Tone',def:'The speaker\'s attitude toward the subject.',cat:'poetry'},
+  {term:'Mood',def:'The feeling the poem or story creates in the reader.',cat:'poetry'},
+  {term:'Imagery',def:'Descriptive language appealing to the senses: sight, sound, smell, taste, touch.',cat:'poetry'},
+  {term:'Simile',def:'Comparison using "like" or "as."',cat:'style'},
+  {term:'Metaphor',def:'Direct comparison without "like" or "as."',cat:'style'},
+  {term:'Personification',def:'Giving human qualities to non-human things.',cat:'style'},
+  {term:'Hyperbole',def:'Deliberate exaggeration for effect.',cat:'style'},
+  {term:'Alliteration',def:'Repetition of the initial consonant sounds in nearby words.',cat:'sound'},
+  {term:'Assonance',def:'Repetition of vowel sounds in nearby words.',cat:'sound'},
+  {term:'Consonance',def:'Repetition of consonant sounds, usually at end of words.',cat:'sound'},
+  {term:'Onomatopoeia',def:'Words that imitate natural sounds.',cat:'sound'},
+  {term:'Rhyme Scheme',def:'Pattern of rhymes labeled with letters (ABAB, AABB, etc.).',cat:'sound'},
+  {term:'Enjambment',def:'When a sentence continues beyond the end of a line in a poem without a pause.',cat:'poetry'},
+  {term:'Stanza',def:'A group of lines in a poem — the poetic equivalent of a paragraph.',cat:'poetry'},
+  {term:'Speaker',def:'The "voice" talking in a poem — not necessarily the poet.',cat:'poetry'},
+  {term:'Diction',def:'Word choice — formal/informal, simple/complex, emotional/neutral.',cat:'poetry'},
+];
+const cats = ['all','plot','character','conflict','theme','setting','style','pov','poetry','sound'];
+let activeCat = 'all';
+
+function buildGlossary() {
+  const grid = document.getElementById('gloss-grid');
+  const filtersEl = document.getElementById('gloss-filters');
+  // Build filters
+  filtersEl.innerHTML = cats.map(c => `<button class="gloss-filter ${c==='all'?'active':''}" onclick="filterGlossaryCat('${c}',this)">${c.charAt(0).toUpperCase()+c.slice(1)}</button>`).join('');
+  // Build items
+  glossaryData.sort((a,b) => a.term.localeCompare(b.term)).forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'gloss-item';
+    el.dataset.cat = item.cat;
+    el.innerHTML = `<div class="gloss-term">${item.term}</div><div class="gloss-def">${item.def}</div><div class="gloss-cat">${item.cat}</div>`;
+    grid.appendChild(el);
+  });
+}
+buildGlossary();
+
+function filterGlossaryCat(cat, btn) {
+  activeCat = cat;
+  document.querySelectorAll('.gloss-filter').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  applyGlossaryFilter();
+}
+
+function filterGlossary() { applyGlossaryFilter(); }
+
+function applyGlossaryFilter() {
+  const q = document.getElementById('gloss-search').value.toLowerCase();
+  document.querySelectorAll('.gloss-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    const catMatch = activeCat === 'all' || item.dataset.cat === activeCat;
+    const textMatch = !q || text.includes(q);
+    item.classList.toggle('hidden', !catMatch || !textMatch);
+  });
+}
+
+// ═══════════════════════════════════════════
+//  BADGES
+// ═══════════════════════════════════════════
+const badgesList = [
+  {id:'explorer',icon:'🗺',name:'Explorer',desc:'Visit your first section',earn:()=>state.visited.size>=1},
+  {id:'scholar',icon:'📚',name:'Scholar',desc:'Visit 5 sections',earn:()=>state.visited.size>=5},
+  {id:'critic',icon:'🎓',name:'Literary Critic',desc:'Visit all sections',earn:()=>state.visited.size>=TOTAL_SECTIONS},
+  {id:'poet',icon:'🎵',name:'Poet\'s Eye',desc:'Visit the Poetry section',earn:()=>state.visited.has('poetry')},
+  {id:'analyst',icon:'🔍',name:'Story Analyst',desc:'Analyze both stories',earn:()=>state.visited.has('story1')&&state.visited.has('story2')},
+  {id:'pyramid',icon:'🏔',name:'Pyramid Master',desc:'Study Freytag\'s Pyramid',earn:()=>state.visited.has('plot')},
+  {id:'quizmaster',icon:'🧠',name:'Quiz Master',desc:'Complete the quiz',earn:()=>state.quizIdx>=quizData.length},
+  {id:'flasher',icon:'🃏',name:'Card Flipper',desc:'Flip 10 flashcards',earn:()=>state.cardsFlipped.size>=10},
+  {id:'xp100',icon:'⭐',name:'XP Hunter',desc:'Earn 100 XP',earn:()=>state.xp>=100},
+  {id:'xp500',icon:'💫',name:'XP Champion',desc:'Earn 500 XP',earn:()=>state.xp>=500},
+];
+
+function updateBadges() {
+  const grid = document.getElementById('badges-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  badgesList.forEach(b => {
+    const earned = b.earn();
+    const isNew = earned && !state.badgesEarned.has(b.id);
+    if (earned) state.badgesEarned.add(b.id);
+    grid.innerHTML += `<div class="badge ${earned?'earned':''}">
+      <div class="badge-icon">${b.icon}</div>
+      <div class="badge-info"><h4>${b.name}${isNew?'<span class="badge-new">NEW</span>':''}</h4><p>${b.desc}${earned?' ✅':''}</p></div>
+    </div>`;
+  });
+}
+updateBadges();
+
+// ═══════════════════════════════════════════
+//  SIDEBAR SEARCH
+// ═══════════════════════════════════════════
+const searchIndex = [
+  {label:'Plot',section:'plot'},{label:"Freytag's Pyramid",section:'plot'},{label:'Exposition',section:'plot'},
+  {label:'Climax',section:'plot'},{label:'Rising Action',section:'plot'},{label:'Resolution',section:'plot'},
+  {label:'Characterization',section:'character'},{label:'Protagonist',section:'character'},
+  {label:'Antagonist',section:'character'},{label:'Static Character',section:'character'},
+  {label:'Dynamic Character',section:'character'},
+  {label:'Conflict',section:'conflict'},{label:'Internal Conflict',section:'conflict'},{label:'External Conflict',section:'conflict'},
+  {label:'Theme',section:'theme'},{label:'Setting',section:'setting'},
+  {label:'Style',section:'style'},{label:'Irony',section:'style'},{label:'Symbolism',section:'style'},
+  {label:'Allusion',section:'style'},{label:'Foreshadowing',section:'style'},
+  {label:'Metaphor',section:'style'},{label:'Simile',section:'style'},{label:'Personification',section:'style'},
+  {label:'Point of View',section:'pov'},{label:'First Person',section:'pov'},{label:'Third Person Omniscient',section:'pov'},
+  {label:'Story of An Hour',section:'story1'},{label:'Louise Mallard',section:'story1'},{label:'Kate Chopin',section:'story1'},
+  {label:"Hilary's Aunt",section:'story2'},
+  {label:'Elements of Poetry',section:'poetry'},{label:'Tone',section:'poetry'},{label:'Mood',section:'poetry'},
+  {label:'Imagery',section:'poetry'},{label:'Speaker',section:'poetry'},
+  {label:'Alliteration',section:'sound'},{label:'Assonance',section:'sound'},{label:'Onomatopoeia',section:'sound'},
+  {label:'Rhythm',section:'poform'},{label:'Meter',section:'poform'},{label:'Stanza',section:'poform'},{label:'Enjambment',section:'poform'},
+];
+
+document.getElementById('sb-search-input').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  const res = document.getElementById('search-results');
+  if (!q) { res.classList.remove('open'); return; }
+  const matches = searchIndex.filter(s => s.label.toLowerCase().includes(q)).slice(0, 7);
+  if (!matches.length) { res.classList.remove('open'); return; }
+  res.innerHTML = matches.map(m =>
+    `<div class="sr-item" onclick="goSection('${m.section}');document.getElementById('sb-search-input').value='';document.getElementById('search-results').classList.remove('open')"><mark>${m.label}</mark></div>`
+  ).join('');
+  res.classList.add('open');
+});
+
+// ═══════════════════════════════════════════
+//  REVISION MODE
+// ═══════════════════════════════════════════
+const revisionItems = [
+  {title:'Plot',def:'The main sequence of events that make up the story, following Freytag\'s Pyramid: exposition → rising action → climax → falling action → resolution.'},
+  {title:'Climax',def:'The point of greatest tension or intensity. The turning point — "the story\'s conflict peaks and we learn the fate of the main characters."'},
+  {title:'Protagonist vs. Antagonist',def:'The protagonist is the main character. The antagonist is the adversary who creates or is involved in the conflict.'},
+  {title:'Static vs. Dynamic',def:'Static (flat) = stays the same. Dynamic (round) = changes and grows — complex, dimensional, well-developed.'},
+  {title:'Conflict',def:'The struggle between two entities. Essential to plot. Two types: External (outside force) and Internal (within oneself).'},
+  {title:'Theme',def:'The main idea, lesson, or message — hidden but incredibly important. Not stated directly; inferred by the reader.'},
+  {title:'Three Types of Irony',def:'Verbal: says one thing, means another. Dramatic: audience knows what characters don\'t. Situational: outcome is opposite of expectation.'},
+  {title:'Symbolism',def:'An object or action that means something more than its literal meaning — used to convey messages poetically or indirectly.'},
+  {title:'Point of View',def:'1st person (I), 2nd person (you/rare), 3rd limited (follows one character), 3rd omniscient (knows all characters\' thoughts).'},
+  {title:'Tone vs. Mood',def:'Tone = the SPEAKER\'s attitude toward the subject. Mood = the feeling the poem creates in the READER.'},
+  {title:'Figurative Language',def:'Simile (like/as), Metaphor (direct comparison), Personification (human traits to objects), Hyperbole (exaggeration), Symbolism, Allusion.'},
+  {title:'Sound Devices',def:'Rhyme, Rhyme Scheme, Alliteration (consonants), Assonance (vowels), Consonance, Onomatopoeia (sound-imitating words).'},
+  {title:'"The Story of an Hour" — Main Theme',def:'A woman\'s desire for personal freedom. Louise feels free after her husband\'s death, only to lose that freedom when he returns alive — and dies from the shock.'},
+  {title:'"Hilary\'s Aunt" — Key Irony',def:'Hilary plans to kill his aunt to inherit her money. But she changes her will before dying, denying him everything — turning the murder into her final act of control.'},
+];
+
+function openRevision() {
+  const c = document.getElementById('revision-content');
+  c.innerHTML = revisionItems.map(r => `<div class="revision-card"><h4>${r.title}</h4><p>${r.def}</p></div>`).join('');
+  document.getElementById('revision-overlay').classList.add('open');
+}
+function closeRevision() { document.getElementById('revision-overlay').classList.remove('open'); }
+document.getElementById('revision-overlay').addEventListener('click', function(e) { if (e.target===this) closeRevision(); });
+
+// ═══════════════════════════════════════════
+//  EXAM MODE
+// ═══════════════════════════════════════════
+const examQs = [
+  'Define the climax of a short story and explain its role in Freytag\'s Pyramid.',
+  'Compare and contrast static (flat) characters with dynamic (round) characters. Give an example of each from "The Story of an Hour."',
+  'Explain the difference between internal and external conflict. Which type is central to "The Story of an Hour" and why?',
+  'What are the three types of irony? Identify one example of each from the two stories studied.',
+  'Explain what symbolism is. What does the open window symbolize in "The Story of an Hour"?',
+  'Describe the point of view used in "The Story of an Hour." How does this choice affect the reader\'s experience?',
+  'Describe the point of view used in "Hilary\'s Aunt." Why is this choice important for the story\'s twist ending?',
+  'What is the main theme of "The Story of an Hour"? How is it expressed through plot and imagery?',
+  'Explain the difference between tone and mood in poetry, using an example for each.',
+  'Define Freytag\'s Pyramid and briefly describe each of its five stages.',
+  'What is the difference between a simile and a metaphor? Give an example of each from the studied texts.',
+  'Explain what onomatopoeia, alliteration, and assonance are. Give one example of each.',
+  'What is the situational irony at the end of "Hilary\'s Aunt"? Explain it fully.',
+  'Describe the setting of "The Story of an Hour." How does the setting (especially the open window) contribute to the theme?',
+  'Define enjambment and end-stopped lines in poetry. How do they affect the reading experience?',
+];
+
+function openExam() {
+  const c = document.getElementById('exam-content');
+  c.innerHTML = examQs.map((q,i) =>
+    `<div class="hl-box" style="margin:10px 0"><div class="hl-label">Q${i+1}</div><div class="hl-text">${q}</div></div>`
+  ).join('');
+  document.getElementById('exam-overlay').classList.add('open');
+}
+function closeExam() { document.getElementById('exam-overlay').classList.remove('open'); }
+document.getElementById('exam-overlay').addEventListener('click', function(e) { if (e.target===this) closeExam(); });
+
+// ═══════════════════════════════════════════
+//  INIT DEFAULT CONFLICT
+// ═══════════════════════════════════════════
+window.addEventListener('load', () => {
+  const cf = conflictTypes.charchar;
+  document.getElementById('cf-right-icon').textContent = cf.rightIcon;
+  document.getElementById('cf-right-title').textContent = cf.rightTitle;
+  document.getElementById('cf-right-desc').textContent = cf.rightDesc;
+  document.getElementById('cf-example').textContent = cf.example;
+});
+</script>
+</body>
+  </html>
