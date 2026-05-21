@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Criticism — Interactive Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #16161f;
+    --glass: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+    --accent: #c9a84c;
+    --accent2: #e8c96a;
+    --accent-glow: rgba(201,168,76,0.25);
+    --red: #e05c5c;
+    --green: #5ce07a;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+    --purple: #7c6aff;
+    --blue: #4a9eff;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(201,168,76,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(124,106,255,0.06) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  .noise {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  /* ── LAYOUT ── */
+  #app { position: relative; z-index: 1; }
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* ── START SCREEN ── */
+  #start-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .start-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 100px; padding: 8px 18px;
+    font-size: 13px; color: var(--accent); letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 32px;
+    backdrop-filter: blur(12px);
+  }
+  .start-badge span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse-dot 2s infinite; }
+  @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.7);} }
+  .start-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    text-align: center;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, #fff 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .start-subtitle {
+    color: var(--text2); font-size: 17px; text-align: center;
+    max-width: 480px; line-height: 1.7; margin-bottom: 48px;
+  }
+  .mode-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px; width: 100%; max-width: 800px; margin-bottom: 40px;
+  }
+  .mode-card {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: var(--radius); padding: 28px 24px;
+    cursor: pointer; transition: var(--transition); position: relative; overflow: hidden;
+    backdrop-filter: blur(12px);
+  }
+  .mode-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.03));
+    opacity: 0; transition: var(--transition);
+  }
+  .mode-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px var(--accent-glow); }
+  .mode-card:hover::before { opacity: 1; }
+  .mode-card.selected { border-color: var(--accent); background: rgba(201,168,76,0.08); }
+  .mode-icon { font-size: 32px; margin-bottom: 12px; }
+  .mode-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .mode-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .mode-card[data-mode="practice"] .mode-name { color: var(--green); }
+  .mode-card[data-mode="exam"] .mode-name { color: var(--accent); }
+  .mode-card[data-mode="revision"] .mode-name { color: var(--purple); }
+
+  .options-row {
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    justify-content: center; margin-bottom: 40px;
+  }
+  .toggle-opt {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 100px; padding: 10px 18px; cursor: pointer;
+    font-size: 14px; color: var(--text2); transition: var(--transition);
+    backdrop-filter: blur(8px); user-select: none;
+  }
+  .toggle-opt:hover { border-color: var(--accent); color: var(--text); }
+  .toggle-opt.active { border-color: var(--accent); color: var(--accent); background: rgba(201,168,76,0.08); }
+  .toggle-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text3); transition: var(--transition); }
+  .toggle-opt.active .toggle-dot { background: var(--accent); }
+
+  .btn-start {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: linear-gradient(135deg, var(--accent), #a87830);
+    color: #000; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 17px;
+    padding: 18px 48px; border-radius: 100px; border: none;
+    cursor: pointer; transition: var(--transition);
+    box-shadow: 0 8px 30px rgba(201,168,76,0.4);
+    letter-spacing: 0.02em;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 16px 50px rgba(201,168,76,0.5); }
+  .btn-start:active { transform: translateY(0); }
+  .btn-start svg { transition: var(--transition); }
+  .btn-start:hover svg { transform: translateX(4px); }
+
+  .stats-row {
+    display: flex; gap: 32px; flex-wrap: wrap; justify-content: center;
+    margin-top: 48px; padding-top: 40px;
+    border-top: 1px solid var(--glass-border);
+  }
+  .stat-item { text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz-screen {
+    flex-direction: row; align-items: stretch;
+  }
+  /* Sidebar */
+  .sidebar {
+    width: 260px; min-width: 260px;
+    background: var(--bg2); border-right: 1px solid var(--glass-border);
+    display: flex; flex-direction: column;
+    padding: 24px 16px; overflow-y: auto;
+    position: sticky; top: 0; height: 100vh;
+    transition: var(--transition);
+  }
+  .sidebar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--accent); margin-bottom: 24px;
+    padding: 0 8px;
+  }
+  .sidebar-mode-badge {
+    display: inline-block; padding: 4px 12px;
+    border-radius: 100px; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 20px;
+  }
+  .sidebar-mode-badge.practice { background: rgba(92,224,122,0.15); color: var(--green); }
+  .sidebar-mode-badge.exam { background: rgba(201,168,76,0.15); color: var(--accent); }
+  .sidebar-mode-badge.revision { background: rgba(124,106,255,0.15); color: var(--purple); }
+
+  .sidebar-progress-section { margin-bottom: 20px; padding: 0 8px; }
+  .sidebar-prog-label { font-size: 12px; color: var(--text3); margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .sidebar-prog-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+  .sidebar-prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+  .sidebar-cats { margin-bottom: 20px; }
+  .sidebar-cat-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text3); padding: 0 8px; margin-bottom: 10px; }
+  .sidebar-cat-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px; border-radius: var(--radius-sm); margin-bottom: 4px;
+    font-size: 13px; color: var(--text2); cursor: pointer; transition: var(--transition);
+    border: 1px solid transparent;
+  }
+  .sidebar-cat-item:hover { background: var(--glass); color: var(--text); }
+  .sidebar-cat-item.active { background: rgba(201,168,76,0.1); border-color: rgba(201,168,76,0.2); color: var(--accent); }
+  .cat-prog { font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+
+  .sidebar-nav-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 4px; padding: 0 8px;
+  }
+  .nav-dot {
+    width: 100%; aspect-ratio: 1; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    cursor: pointer; transition: var(--transition);
+    background: var(--bg3); color: var(--text3);
+    border: 1px solid transparent;
+  }
+  .nav-dot:hover { background: var(--glass); color: var(--text); border-color: var(--glass-border); }
+  .nav-dot.current { background: var(--accent); color: #000; font-weight: 700; }
+  .nav-dot.answered-correct { background: rgba(92,224,122,0.2); color: var(--green); border-color: rgba(92,224,122,0.3); }
+  .nav-dot.answered-wrong { background: rgba(224,92,92,0.2); color: var(--red); border-color: rgba(224,92,92,0.3); }
+  .nav-dot.answered { background: rgba(201,168,76,0.15); color: var(--accent); border-color: rgba(201,168,76,0.2); }
+
+  .sidebar-shortcut { margin-top: auto; padding: 16px 8px 0; border-top: 1px solid var(--glass-border); }
+  .shortcut-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 10px; }
+  .shortcut-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; font-size: 12px; color: var(--text2); }
+  .shortcut-key { background: var(--bg3); border: 1px solid var(--glass-border); border-radius: 4px; padding: 2px 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text); }
+
+  /* Main Quiz Area */
+  .quiz-main {
+    flex: 1; display: flex; flex-direction: column;
+    padding: 32px; overflow-y: auto; max-width: 800px;
+    margin: 0 auto; width: 100%;
+  }
+  .quiz-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 32px; gap: 20px; flex-wrap: wrap;
+  }
+  .q-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--text3);
+  }
+  .q-counter span { color: var(--text); font-weight: 600; }
+  .timer-display {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 100px; padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 15px;
+    font-weight: 600; backdrop-filter: blur(8px);
+    transition: var(--transition);
+  }
+  .timer-display.warning { border-color: rgba(224,92,92,0.4); color: var(--red); animation: timer-pulse 1s infinite; }
+  @keyframes timer-pulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+  .timer-icon { font-size: 14px; }
+  .score-display {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: var(--text2);
+  }
+  .score-display .score-num { font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--green); font-weight: 600; }
+
+  .progress-bar-wrap { margin-bottom: 28px; }
+  .progress-bar-top { display: flex; justify-content: space-between; font-size: 12px; color: var(--text3); margin-bottom: 6px; }
+  .progress-bar-bg { height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%); border-radius: 3px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+
+  .diff-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 4px 12px; border-radius: 100px; font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .diff-badge.easy { background: rgba(92,224,122,0.1); color: var(--green); border: 1px solid rgba(92,224,122,0.2); }
+  .diff-badge.medium { background: rgba(201,168,76,0.1); color: var(--accent); border: 1px solid rgba(201,168,76,0.2); }
+  .diff-badge.hard { background: rgba(224,92,92,0.1); color: var(--red); border: 1px solid rgba(224,92,92,0.2); }
+
+  .question-type-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 4px 12px; border-radius: 100px; font-weight: 600;
+    margin-bottom: 16px; margin-left: 8px;
+    background: rgba(74,158,255,0.1); color: var(--blue); border: 1px solid rgba(74,158,255,0.2);
+  }
+
+  .question-card {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: var(--radius); padding: 32px;
+    margin-bottom: 24px; backdrop-filter: blur(12px);
+    animation: slide-in 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes slide-in { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(17px, 2.5vw, 21px);
+    font-weight: 400; line-height: 1.65;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .question-num-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--text3); margin-bottom: 16px;
+  }
+
+  .options-list { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--bg3); border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm); padding: 16px 20px;
+    cursor: pointer; transition: var(--transition);
+    text-align: left; width: 100%; color: var(--text);
+    font-size: 15px; font-family: 'DM Sans', sans-serif; line-height: 1.5;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(201,168,76,0.06); transform: translateX(4px); }
+  .option-btn:disabled { cursor: default; }
+  .option-letter {
+    width: 28px; height: 28px; min-width: 28px;
+    border-radius: 8px; background: var(--glass);
+    border: 1px solid var(--glass-border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+    color: var(--text2); transition: var(--transition);
+  }
+  .option-btn.correct { border-color: var(--green); background: rgba(92,224,122,0.08); animation: flash-green 0.5s; }
+  .option-btn.correct .option-letter { background: rgba(92,224,122,0.2); border-color: var(--green); color: var(--green); }
+  .option-btn.wrong { border-color: var(--red); background: rgba(224,92,92,0.08); animation: flash-red 0.5s; }
+  .option-btn.wrong .option-letter { background: rgba(224,92,92,0.2); border-color: var(--red); color: var(--red); }
+  .option-btn.show-correct { border-color: rgba(92,224,122,0.4); background: rgba(92,224,122,0.04); }
+  @keyframes flash-green { 0%{background:rgba(92,224,122,0.3);} 100%{background:rgba(92,224,122,0.08);} }
+  @keyframes flash-red { 0%{background:rgba(224,92,92,0.3);} 100%{background:rgba(224,92,92,0.08);} }
+
+  .explanation-box {
+    background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.2);
+    border-radius: var(--radius-sm); padding: 20px 24px;
+    margin-top: 16px; animation: fade-in 0.4s ease;
+    display: none;
+  }
+  .explanation-box.visible { display: block; }
+  .expl-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+  .expl-text { font-size: 14px; line-height: 1.7; color: var(--text2); }
+  @keyframes fade-in { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+
+  .quiz-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; margin-top: 8px;
+  }
+  .btn-nav {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 100px; padding: 12px 24px;
+    cursor: pointer; transition: var(--transition);
+    font-size: 14px; font-weight: 600; color: var(--text);
+    font-family: 'DM Sans', sans-serif; backdrop-filter: blur(8px);
+  }
+  .btn-nav:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-nav.primary { background: var(--accent); border-color: var(--accent); color: #000; }
+  .btn-nav.primary:hover { background: var(--accent2); box-shadow: 0 8px 30px rgba(201,168,76,0.3); }
+  .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .skip-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: none; cursor: pointer;
+    font-size: 13px; color: var(--text3); transition: var(--transition);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .skip-btn:hover { color: var(--text2); }
+
+  /* ── RESULT SCREEN ── */
+  #result-screen {
+    flex-direction: column; align-items: center;
+    justify-content: flex-start; padding: 60px 20px;
+    min-height: 100vh;
+  }
+  .result-card {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 24px; padding: 48px; backdrop-filter: blur(12px);
+    max-width: 720px; width: 100%; text-align: center;
+    animation: slide-in 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .result-trophy { font-size: 72px; margin-bottom: 16px; display: block; animation: trophy-bounce 0.8s cubic-bezier(0.4,0,0.2,1); }
+  @keyframes trophy-bounce { 0%{transform:scale(0) rotate(-10deg);} 60%{transform:scale(1.2) rotate(5deg);} 100%{transform:scale(1) rotate(0);} }
+  .result-grade {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px; font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 8px;
+  }
+  .result-label { font-size: 18px; color: var(--text2); margin-bottom: 40px; }
+  .result-stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px; margin-bottom: 40px;
+  }
+  .result-stat {
+    background: var(--bg3); border-radius: var(--radius-sm); padding: 20px 16px;
+    border: 1px solid var(--glass-border);
+  }
+  .result-stat-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .result-stat-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+  .correct-stat .result-stat-num { color: var(--green); }
+  .wrong-stat .result-stat-num { color: var(--red); }
+  .time-stat .result-stat-num { color: var(--blue); }
+  .pct-stat .result-stat-num { color: var(--accent); }
+
+  .achievements-section { margin-bottom: 40px; }
+  .ach-title { font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 16px; }
+  .badges-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .badge {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg3); border: 1px solid var(--glass-border);
+    border-radius: 100px; padding: 8px 16px;
+    font-size: 13px; color: var(--text2); opacity: 0.4;
+    transition: var(--transition);
+  }
+  .badge.earned { opacity: 1; border-color: var(--accent); color: var(--accent); background: rgba(201,168,76,0.08); animation: badge-pop 0.5s cubic-bezier(0.4,0,0.2,1); }
+  @keyframes badge-pop { 0%{transform:scale(0.8);} 60%{transform:scale(1.1);} 100%{transform:scale(1);} }
+
+  .perf-eval {
+    background: var(--bg3); border-radius: var(--radius-sm); padding: 20px 24px;
+    text-align: left; margin-bottom: 32px; border: 1px solid var(--glass-border);
+  }
+  .perf-eval h3 { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 12px; }
+  .perf-eval p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+  .result-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn-result {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 100px; padding: 14px 28px;
+    cursor: pointer; font-size: 15px; font-weight: 600;
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+    transition: var(--transition); backdrop-filter: blur(8px);
+  }
+  .btn-result:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-result.primary { background: var(--accent); border-color: var(--accent); color: #000; }
+  .btn-result.primary:hover { background: var(--accent2); box-shadow: 0 8px 30px rgba(201,168,76,0.3); }
+
+  /* Category progress */
+  .cat-prog-section { margin-bottom: 40px; width: 100%; }
+  .cat-prog-title { font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 16px; text-align: left; }
+  .cat-prog-item { margin-bottom: 12px; }
+  .cat-prog-top { display: flex; justify-content: space-between; font-size: 13px; color: var(--text2); margin-bottom: 6px; }
+  .cat-prog-bar-bg { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .cat-prog-bar-fill { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+
+  /* Saved state indicator */
+  .save-toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--bg2); border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm); padding: 12px 20px;
+    font-size: 13px; color: var(--text2); z-index: 1000;
+    display: flex; align-items: center; gap: 8px;
+    transform: translateY(80px); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    backdrop-filter: blur(12px);
+  }
+  .save-toast.show { transform: translateY(0); }
+
+  /* Mobile sidebar toggle */
+  .sidebar-toggle {
+    display: none; position: fixed; top: 16px; left: 16px; z-index: 100;
+    background: var(--bg2); border: 1px solid var(--glass-border);
+    border-radius: 10px; width: 40px; height: 40px;
+    align-items: center; justify-content: center;
+    cursor: pointer; font-size: 18px;
+  }
+  .sidebar-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 90; backdrop-filter: blur(4px);
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { position: fixed; left: -280px; z-index: 95; transition: left 0.3s ease; top: 0; height: 100vh; }
+    .sidebar.open { left: 0; }
+    .sidebar-overlay.show { display: block; }
+    .sidebar-toggle { display: flex; }
+    .quiz-main { padding: 20px 16px; padding-top: 64px; }
+    .question-card { padding: 24px 20px; }
+    .result-card { padding: 32px 24px; }
+    .start-title { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div id="app">
+
+<!-- START SCREEN -->
+<div id="start-screen" class="screen active">
+  <div class="start-badge"><span></span> Qena University · English Dept</div>
+  <h1 class="start-title">Introduction<br>to Criticism</h1>
+  <p class="start-subtitle">A comprehensive interactive quiz covering Short Story Analysis, Poetry Elements, Literary Terms, and Critical Theory — 100 university-level questions.</p>
+
+  <div class="mode-grid">
+    <div class="mode-card selected" data-mode="practice" onclick="selectMode('practice',this)">
+      <div class="mode-icon">🎯</div>
+      <div class="mode-name">Practice Mode</div>
+      <div class="mode-desc">Instant feedback after each answer with full explanations. No time pressure. Ideal for learning.</div>
+    </div>
+    <div class="mode-card" data-mode="exam" onclick="selectMode('exam',this)">
+      <div class="mode-icon">⏱️</div>
+      <div class="mode-name">Exam Mode</div>
+      <div class="mode-desc">Timed quiz simulating real exam conditions. No feedback until the end. 90 seconds per question.</div>
+    </div>
+    <div class="mode-card" data-mode="revision" onclick="selectMode('revision',this)">
+      <div class="mode-icon">📖</div>
+      <div class="mode-name">Revision Mode</div>
+      <div class="mode-desc">Shows explanation before answering. Best for studying and reviewing difficult concepts.</div>
+    </div>
+  </div>
+
+  <div class="options-row">
+    <div class="toggle-opt active" id="toggle-random" onclick="toggleOpt(this,'random')">
+      <div class="toggle-dot"></div> Randomize Questions
+    </div>
+    <div class="toggle-opt" id="toggle-subset" onclick="toggleOpt(this,'subset')">
+      <div class="toggle-dot"></div> Quick Mode (50 Qs)
+    </div>
+  </div>
+
+  <button class="btn-start" onclick="startQuiz()">
+    Begin Quiz
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <div class="stats-row">
+    <div class="stat-item"><div class="stat-num">100</div><div class="stat-label">Questions</div></div>
+    <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Modes</div></div>
+    <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">Categories</div></div>
+    <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">Achievements</div></div>
+  </div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="quiz-screen" class="screen">
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">📚 Intro to Criticism</div>
+    <div id="sidebar-mode-badge" class="sidebar-mode-badge practice">Practice</div>
+    <div class="sidebar-progress-section">
+      <div class="sidebar-prog-label"><span>Progress</span><span id="sidebar-prog-pct">0%</span></div>
+      <div class="sidebar-prog-bar"><div class="sidebar-prog-fill" id="sidebar-prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="sidebar-cats">
+      <div class="sidebar-cat-title">Categories</div>
+      <div id="sidebar-cats-list"></div>
+    </div>
+    <div>
+      <div class="sidebar-cat-title" style="margin-bottom:10px">Question Map</div>
+      <div class="sidebar-nav-grid" id="sidebar-nav-grid"></div>
+    </div>
+    <div class="sidebar-shortcut">
+      <div class="shortcut-title">Shortcuts</div>
+      <div class="shortcut-item"><span>Previous</span><span class="shortcut-key">←</span></div>
+      <div class="shortcut-item"><span>Next</span><span class="shortcut-key">→</span></div>
+      <div class="shortcut-item"><span>Answer A–D</span><span class="shortcut-key">1–4</span></div>
+      <div class="shortcut-item"><span>True/False</span><span class="shortcut-key">T / F</span></div>
+    </div>
+  </aside>
+
+  <main class="quiz-main">
+    <div class="quiz-header">
+      <div class="q-counter">Question <span id="q-current">1</span> / <span id="q-total">100</span></div>
+      <div class="timer-display" id="timer-display"><span class="timer-icon">⏱</span><span id="timer-text">1:30</span></div>
+      <div class="score-display">Score: <span class="score-num" id="score-display">0</span></div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-top"><span id="prog-cat">Category</span><span id="prog-pct">0%</span></div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div>
+      <span class="diff-badge easy" id="diff-badge">Easy</span>
+      <span class="question-type-badge" id="type-badge">MCQ</span>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="question-num-label" id="q-num-label">Q1 · Literary Criticism</div>
+      <div class="question-text" id="question-text">Loading question...</div>
+      <div class="options-list" id="options-list"></div>
+      <div class="explanation-box" id="explanation-box">
+        <div class="expl-title">📖 Explanation</div>
+        <div class="expl-text" id="explanation-text"></div>
+      </div>
+    </div>
+
+    <div class="quiz-footer">
+      <button class="btn-nav" id="btn-prev" onclick="prevQuestion()" disabled>← Previous</button>
+      <button class="skip-btn" id="btn-skip" onclick="skipQuestion()">Skip →</button>
+      <button class="btn-nav primary" id="btn-next" onclick="nextQuestion()">Next →</button>
+    </div>
+  </main>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="result-screen" class="screen">
+  <div class="result-card" id="result-card">
+    <span class="result-trophy" id="result-trophy">🏆</span>
+    <div class="result-grade" id="result-grade">85%</div>
+    <div class="result-label" id="result-label">Excellent Performance!</div>
+
+    <div class="result-stats-grid">
+      <div class="result-stat correct-stat"><div class="result-stat-num" id="stat-correct">0</div><div class="result-stat-label">Correct</div></div>
+      <div class="result-stat wrong-stat"><div class="result-stat-num" id="stat-wrong">0</div><div class="result-stat-label">Wrong</div></div>
+      <div class="result-stat pct-stat"><div class="result-stat-num" id="stat-pct">0%</div><div class="result-stat-label">Score</div></div>
+      <div class="result-stat time-stat"><div class="result-stat-num" id="stat-time">0m</div><div class="result-stat-label">Time</div></div>
+    </div>
+
+    <div class="cat-prog-section">
+      <div class="cat-prog-title">Performance by Category</div>
+      <div id="cat-breakdown"></div>
+    </div>
+
+    <div class="achievements-section">
+      <div class="ach-title">🏅 Achievements</div>
+      <div class="badges-row" id="badges-row">
+        <div class="badge" id="badge-perfect">⭐ Perfect Score</div>
+        <div class="badge" id="badge-scholar">📚 Literary Scholar</div>
+        <div class="badge" id="badge-speed">⚡ Speed Reader</div>
+        <div class="badge" id="badge-poet">🎭 Poet's Eye</div>
+        <div class="badge" id="badge-critic">🔍 True Critic</div>
+        <div class="badge" id="badge-persistent">💪 Persistent</div>
+        <div class="badge" id="badge-story">📖 Story Master</div>
+        <div class="badge" id="badge-theory">🎓 Theory Expert</div>
+      </div>
+    </div>
+
+    <div class="perf-eval">
+      <h3>📊 Performance Evaluation</h3>
+      <p id="perf-eval-text">Loading evaluation...</p>
+    </div>
+
+    <div class="result-btns">
+      <button class="btn-result primary" onclick="restartQuiz()">🔄 Restart Quiz</button>
+      <button class="btn-result" onclick="reviewMistakes()">❌ Review Mistakes</button>
+      <button class="btn-result" onclick="goHome()">🏠 Home</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="save-toast" id="save-toast">💾 Progress saved</div>
+
+<script>
+// ══════════════════════════════════════
+//  QUESTION BANK — 100 Questions
+// ══════════════════════════════════════
+const ALL_QUESTIONS = [
+  // ── CATEGORY 1: Literary Criticism & Introduction (Q1-12) ──
+  {id:1,cat:"Literary Criticism",diff:"easy",type:"mcq",
+   q:"According to the material, what does literary criticism primarily analyze?",
+   opts:["Grammar and spelling in written texts","Fiction, poetry, and drama by considering key issues such as plot, character, setting, and theme","The author's personal biography and historical events","Publishing history and market reception of literary works"],
+   ans:1, expl:"Literary criticism analyzes fiction, poetry, drama by considering key issues such as plot, character, setting, theme, imagery, and voice."},
+  {id:2,cat:"Literary Criticism",diff:"easy",type:"tf",
+   q:"True or False: In literary criticism, the word 'criticism' simply means finding fault with the writing.",
+   opts:["True","False"],ans:1,
+   expl:"Literary criticism does NOT simply mean finding fault; it means looking at the work from a critical or analytical viewpoint in order to understand it better."},
+  {id:3,cat:"Literary Criticism",diff:"medium",type:"mcq",
+   q:"Why do scholars devise ways to understand how people interpret a text, according to the introduction?",
+   opts:["Because readers lack the intelligence to understand literature on their own","Because a literary text's message can be subjective and each reader may interpret it differently","Because authors intentionally obscure their meanings to challenge readers","Because literary texts always have exactly one correct interpretation"],
+   ans:1, expl:"The message of a literary work can be subjective, meaning each reader might interpret the same text in a slightly different way. This is why scholars have devised ways to understand how people interpret a text."},
+  {id:4,cat:"Literary Criticism",diff:"medium",type:"mcq",
+   q:"Sir Richard Steele's quote 'Reading is to the mind what exercise is to the body' compares reading to physical fitness in order to suggest that:",
+   opts:["Reading is a physically exhausting activity","Reading strengthens and develops the mind just as exercise develops the body","Reading should be practiced only by intellectuals and academics","Reading is a competitive activity similar to athletic sports"],
+   ans:1, expl:"The analogy compares reading to exercise, implying that reading is a form of mental exercise that strengthens and develops the mind."},
+  {id:5,cat:"Literary Criticism",diff:"hard",type:"mcq",
+   q:"Which of the following does NOT constitute a component of literary criticism, according to the material?",
+   opts:["Examining the effectiveness of a literary work","Analyzing key issues like imagery and voice","Providing only a plot summary and biographical details about the author","Considering character development and thematic content"],
+   ans:2, expl:"The material explicitly states that literary criticism involves more than just summarizing the plot or offering biographical information about the author."},
+  {id:6,cat:"Literary Criticism",diff:"easy",type:"tf",
+   q:"True or False: Reading and writing are described in the introduction as inseparable acts, like two sides of the same coin.",
+   opts:["True","False"],ans:0,
+   expl:"The introduction states: 'Reading and writing seem to be inseparable acts, rather like two sides of the same coin.'"},
+  {id:7,cat:"Literary Criticism",diff:"hard",type:"mcq",
+   q:"According to the material, what is the primary purpose of literary criticism in relation to a literary work?",
+   opts:["To assess commercial viability of the work for publishers","To compare the work to other works written in the same historical period","To understand the work better through analytical and critical examination","To identify grammatical errors and stylistic weaknesses in the writing"],
+   ans:2, expl:"Literary criticism looks at a work 'from a critical or analytical viewpoint in order to understand it better.'"},
+
+  // ── CATEGORY 2: Short Story Analysis (Q8-35) ──
+  {id:8,cat:"Short Story Analysis",diff:"easy",type:"mcq",
+   q:"What is the definition of a short story as provided in the material?",
+   opts:["A long narrative poem about heroic events","A short work of fiction involving imagined events and characters","A factual account of events that occurred in the past","A dramatic work intended to be performed on stage"],
+   ans:1, expl:"A short story is defined as a short work of fiction. Fiction is prose writing about imagined events and characters."},
+  {id:9,cat:"Short Story Analysis",diff:"easy",type:"mcq",
+   q:"What distinguishes prose writing from poetry, according to the material?",
+   opts:["Prose contains more complex vocabulary than poetry","Prose is longer than poetry and always written in paragraphs","Prose does not depend on verses, meters, or rhymes for its organization","Prose can only describe real events while poetry deals with imagination"],
+   ans:2, expl:"Prose writing differs from poetry in that it does not depend on verses, meters or rhymes for its organization and presentation."},
+  {id:10,cat:"Short Story Analysis",diff:"easy",type:"mcq",
+   q:"What is a novella, according to the material?",
+   opts:["A short story with fewer than twenty pages","A very long novel with multiple plotlines","A short story that is quite long, say fifty to one hundred pages","A collection of related short stories by the same author"],
+   ans:2, expl:"If a short story is a long one, say fifty to one hundred pages, we call it a novella."},
+  {id:11,cat:"Short Story Analysis",diff:"easy",type:"tf",
+   q:"True or False: Freytag's Pyramid was developed by a British playwright in the 1900s.",
+   opts:["True","False"],ans:1,
+   expl:"Freytag's Pyramid was identified by Gustav Freytag, a German playwright who lived during the 1800s, not a British playwright in the 1900s."},
+  {id:12,cat:"Short Story Analysis",diff:"easy",type:"mcq",
+   q:"Which of the following American writers is NOT mentioned in the material as a master of short stories?",
+   opts:["O. Henry","Stephen Crane","F. Scott Fitzgerald","Mark Twain"],
+   ans:2, expl:"The material mentions O. Henry, Stephen Crane, Jack London, Mark Twain, and Edgar Allan Poe. F. Scott Fitzgerald is not mentioned."},
+  {id:13,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"What is the primary function of the Exposition in Freytag's Pyramid?",
+   opts:["To reveal the climax of the central conflict","To introduce the major fictional elements—setting, characters, style—and build the story's world","To describe the aftermath of the conflict and resolve loose ends","To escalate tension through a series of increasingly difficult challenges"],
+   ans:1, expl:"In the Exposition, the writer's sole focus is on building the world in which the story's conflict happens, introducing major fictional elements like setting, characters, and style."},
+  {id:14,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"What is the 'inciting incident' in Freytag's Pyramid?",
+   opts:["The final resolution that ties up all loose ends of the plot","The moment when the protagonist and antagonist first meet","The event that starts the main conflict of the story, ending the exposition","The climactic turning point where the conflict is addressed irreversibly"],
+   ans:2, expl:"The exposition should end with the 'inciting incident' — the event that starts the main conflict of the story."},
+  {id:15,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"According to the material, what typically happens during the Rising Action of a story?",
+   opts:["The conflict is resolved and the protagonist achieves their goal","Things 'get worse'—wrong decisions, complications, new characters complicating the plot","The narrative focuses exclusively on describing the setting in detail","The antagonist is defeated and the protagonist triumphs"],
+   ans:1, expl:"Often, things 'get worse' in rising action: someone makes a wrong decision, the antagonist hurts the protagonist, new characters further complicate the plot."},
+  {id:16,cat:"Short Story Analysis",diff:"hard",type:"mcq",
+   q:"The material describes the climax as a 'turning point.' Which three-fold definition of climax is provided?",
+   opts:["Exposition, Rising Action, and Resolution","The main character receives information, accepts it, and acts on it","Character introduction, conflict escalation, and final confrontation","Setting description, character development, and thematic revelation"],
+   ans:1, expl:"Climax is described as: 1) the main character receives new information, 2) accepts this information, 3) acts on this information by making a choice."},
+  {id:17,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"What distinguishes the Falling Action from the Rising Action in a story?",
+   opts:["Falling action introduces new characters while rising action focuses on existing ones","Falling action explores the aftermath of the climax while rising action escalates conflict toward it","Falling action contains only dialogue while rising action is purely descriptive","Falling action is always longer than rising action in a well-structured story"],
+   ans:1, expl:"While rising action escalates the conflict, falling action explores the aftermath of the climax and begins tying up loose ends."},
+  {id:18,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"What is the difference between 'denouement' and 'resolution' as presented in the material?",
+   opts:["They are entirely different literary concepts with opposing meanings","Denouement specifically refers to the last event tying up loose ends, sometimes in an epilogue, while resolution is the broader final unwinding of the plot","Resolution occurs before the climax while denouement occurs after the exposition","Denouement only applies to tragedy while resolution applies to comedy"],
+   ans:1, expl:"A denouement refers to the last event that ties up the story's loose ends, sometimes expressed in the story's epilogue or closing scene."},
+  {id:19,cat:"Short Story Analysis",diff:"easy",type:"mcq",
+   q:"According to the material, what are the TWO meanings of the word 'character'?",
+   opts:["A fictional person and a real historical figure","A person in a work of fiction AND the characteristics/traits of a person","A hero and a villain in the same story","The main character and minor supporting characters"],
+   ans:1, expl:"There are two meanings: 1) The person in a work of fiction, and 2) The characteristics of a person."},
+  {id:20,cat:"Short Story Analysis",diff:"easy",type:"mcq",
+   q:"What is the difference between a Protagonist and an Antagonist?",
+   opts:["The protagonist is the villain while the antagonist is the hero","The protagonist is the central character while the antagonist opposes the main character","The protagonist appears only at the beginning while the antagonist appears throughout","The protagonist is always a human character while the antagonist can be non-human"],
+   ans:1, expl:"The PROTAGONIST is the central character to the story. The ANTAGONIST is the character or force that opposes the protagonist."},
+  {id:21,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"Which of the following is NOT listed as a method through which an author reveals character?",
+   opts:["The character's physical appearance","What the character says, thinks, feels, and dreams","The socioeconomic background and family history of the character","What others say about the character and how others react to them"],
+   ans:2, expl:"The four methods are: a) physical appearance, b) what he/she says, thinks, feels and dreams, c) what he/she does or does not do, d) what others say about him/her."},
+  {id:22,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"How do 'flat' and 'round' characters differ from 'static' and 'dynamic' characters?",
+   opts:["Flat/round refer to physical description while static/dynamic refer to speech patterns","Flat/round refer to character complexity and depth while static/dynamic refer to whether a character changes during the story","They are all synonyms describing the same quality of character development","Static/dynamic refer to importance in the plot while flat/round refer to narrative technique"],
+   ans:1, expl:"Static (flat) means the character stays the same throughout; developing (dynamic) means the character changes. Flat characters have one or two traits with little description; round characters are complex and well-developed."},
+  {id:23,cat:"Short Story Analysis",diff:"easy",type:"tf",
+   q:"True or False: Flat characters typically play the lead roles in stories and are complex and dimensional.",
+   opts:["True","False"],ans:1,
+   expl:"Flat characters do NOT play important roles; they often have only one or two traits. Round characters play lead roles and are complex, dimensional, and well-developed."},
+  {id:24,cat:"Short Story Analysis",diff:"easy",type:"mcq",
+   q:"What are the TWO types of conflict described in the material?",
+   opts:["Moral conflict and physical conflict","Internal conflict and external conflict","Character conflict and plot conflict","Social conflict and personal conflict"],
+   ans:1, expl:"The two types of conflict are: 1) External — a struggle with a force outside one's self, and 2) Internal — a struggle within one's self."},
+  {id:25,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"Which of the following is NOT listed as a type of conflict in the material?",
+   opts:["Character vs. character","Character vs. nature or natural forces","Character vs. the author's intentions","Character vs. society, culture, ideas, practices, or customs"],
+   ans:2, expl:"The types listed are: character vs. character, character vs. nature, character vs. society/culture, and character vs. the circumstances of life."},
+  {id:26,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"How is 'theme' defined in the material?",
+   opts:["The chronological sequence of events in the story","The main idea, lesson, or message in the short story; the author's meaning or main idea","The physical setting and time period where the story takes place","The style and tone of narration used throughout the story"],
+   ans:1, expl:"The theme is the main idea, lesson, or message in the short story. It is the author's meaning or main idea that he is trying to convey."},
+  {id:27,cat:"Short Story Analysis",diff:"easy",type:"mcq",
+   q:"Which of the following is provided as an example of a 'common theme' in literature?",
+   opts:["Detailed plot twists and surprise endings","The specific geography of the story's setting","Coming of age, circle of life, prejudice, greed","Character's physical appearance changing over time"],
+   ans:2, expl:"Common themes include coming of age, circle of life, prejudice, greed, good vs. evil, etc."},
+  {id:28,cat:"Short Story Analysis",diff:"easy",type:"tf",
+   q:"True or False: Themes can be 'universal,' meaning they are understood by readers regardless of culture or country.",
+   opts:["True","False"],ans:0,
+   expl:"Themes can be universal, meaning they are understood by readers no matter what culture or country the readers are in."},
+  {id:29,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"According to the material, what aspects of a story does Setting describe?",
+   opts:["The characters' motivations and psychological states","Where and when the story takes place, including time period, season, location, and atmosphere","The narrative structure and point of view used by the author","The moral lessons and thematic content of the story"],
+   ans:1, expl:"Setting is a description of where and when the story takes place, including weather, time of year, historical period, and geographical location."},
+  {id:30,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"How does Setting impact characters, according to the material?",
+   opts:["Setting has no direct impact on characters, only on the plot","Setting impacts characters through the skills they've developed to survive, the tools they'll have, and their presuppositions","Setting only affects minor characters while the protagonist remains independent of their environment","Setting determines a character's physical appearance and speech patterns"],
+   ans:1, expl:"Setting impacts characters through: the skills they've developed to survive, the tools they'll have (weapons, money, clothing), and the presuppositions characters bring into the story."},
+  {id:31,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"How is 'Style' defined in the material?",
+   opts:["The thematic content and moral lessons of a literary work","The manner in which an author expresses himself or herself in writing — not what is said but how it is said","The chronological structure of events in a narrative","The types of characters and conflicts used in a story"],
+   ans:1, expl:"Style is the manner in which an author expresses himself or herself in writing. It refers not to what is said, but how it is said."},
+  {id:32,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"What is the definition of 'Allusion' as a literary device?",
+   opts:["The use of hints or clues to suggest future events in the story","An indirect reference to another artistic work, person, event, or place intended to create an association in the reader's mind","The use of an object or action to mean something beyond its literal meaning","An implied contradiction between what is said and what is meant"],
+   ans:1, expl:"Allusion is an indirect reference to another artistic work or person, event, or place. The author makes the allusion with the intention that the well-known object will create an association in the reader's mind."},
+  {id:33,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"Which type of irony occurs when an audience perceives something that the characters in the story do not know?",
+   opts:["Verbal irony","Situational irony","Dramatic irony","Cosmic irony"],
+   ans:2, expl:"Dramatic irony is when an audience perceives something that the characters don't know. It is also the contrast between what a character or narrator says and what a reader knows to be true."},
+  {id:34,cat:"Short Story Analysis",diff:"hard",type:"mcq",
+   q:"What distinguishes verbal irony from situational irony?",
+   opts:["Verbal irony occurs in poetry while situational irony only occurs in prose","Verbal irony is when a narrator says one thing and means something else, while situational irony is a contradiction between the expected result and the actual result","Verbal irony involves physical actions while situational irony involves spoken words","Verbal irony is humorous while situational irony is always tragic in nature"],
+   ans:1, expl:"Verbal irony: a narrator/character says one thing and means something else. Situational irony: a contradiction between the expected result and the actual result or between appearance and reality."},
+  {id:35,cat:"Short Story Analysis",diff:"medium",type:"mcq",
+   q:"What is Symbolism, according to the material?",
+   opts:["The structured pattern of stressed and unstressed syllables in a poem","The use of an object or action to mean something more than its literal meaning","A comparison between two unlike things using 'like' or 'as'","The repetition of consonant sounds at the beginning of nearby words"],
+   ans:1, expl:"Symbolism is the use of an object or action to mean something more than its literal meaning. Authors use symbolism to convey messages poetically or indirectly."},
+
+  // ── CATEGORY 3: The Story of an Hour (Q36-55) ──
+  {id:36,cat:"Story of an Hour",diff:"easy",type:"mcq",
+   q:"Why was great care taken when breaking the news of Brently Mallard's death to Mrs. Mallard?",
+   opts:["She was known to have very dramatic emotional reactions","She was afflicted with a heart trouble","She and her husband had been separated and the news was unexpected","She was very young and had no experience with death or grief"],
+   ans:1, expl:"Knowing that Mrs. Mallard was afflicted with a heart trouble, great care was taken to break to her as gently as possible the news of her husband's death."},
+  {id:37,cat:"Story of an Hour",diff:"easy",type:"mcq",
+   q:"Who told Mrs. Mallard about her husband's death?",
+   opts:["Richards, her husband's friend","A doctor who came to the house","Her sister Josephine","A telegram delivered to the house"],
+   ans:2, expl:"It was her sister Josephine who told her, in broken sentences; veiled hints that revealed in half concealing."},
+  {id:38,cat:"Story of an Hour",diff:"easy",type:"mcq",
+   q:"Where was Richards when he first received news of the railroad disaster?",
+   opts:["At the scene of the railroad accident","At the Mallard family home","In the newspaper office","At the hospital where Brently Mallard was taken"],
+   ans:2, expl:"It was Richards who had been in the newspaper office when intelligence of the railroad disaster was received."},
+  {id:39,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"After hearing the news, what did Mrs. Mallard do immediately?",
+   opts:["She fainted and was carried to her bedroom","She refused to believe the news and demanded more evidence","She wept at once with sudden, wild abandonment in her sister's arms, then went to her room alone","She called for a doctor to confirm the death certificate"],
+   ans:2, expl:"She wept at once, with sudden, wild abandonment, in her sister's arms. When the storm of grief had spent itself she went away to her room alone."},
+  {id:40,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"What does the 'open window' symbolize in 'The Story of an Hour'?",
+   opts:["The literal window in Louise Mallard's bedroom through which she watches the street","Freedom, opportunity, and the new life Louise could have without marital constraints","The fragility of Louise's heart condition and her physical weakness","The passage of time and the approaching inevitability of death"],
+   ans:1, expl:"The Open Window symbolizes freedom and opportunity. The window connects Louise to the world outside, symbolizing possibilities and independence."},
+  {id:41,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"In 'The Story of an Hour,' the climax occurs at which point in the narrative?",
+   opts:["When Louise first hears of her husband's death from Josephine","When Louise locks herself in her room and refuses to come out","When Louise fully realizes she is free and begins whispering 'Free, free, free!'","When Brently Mallard enters the house alive at the end of the story"],
+   ans:2, expl:"The climax occurs when Louise Mallard fully realizes that she is free after her husband's death, while sitting alone and whispering 'Free, free, free!'"},
+  {id:42,cat:"Story of an Hour",diff:"easy",type:"mcq",
+   q:"What do the doctors say is the cause of Mrs. Mallard's death at the end of the story?",
+   opts:["A sudden stroke caused by extreme stress","Heart failure triggered by the shock of unexpected grief","Heart disease — of the joy that kills","Exhaustion from the overwhelming emotional trauma"],
+   ans:2, expl:"When the doctors came they said she had died of heart disease — of the joy that kills."},
+  {id:43,cat:"Story of an Hour",diff:"hard",type:"mcq",
+   q:"What is the primary irony in the story's ending?",
+   opts:["The irony that Josephine was worried about Louise but it was Brently who survived","The irony that Louise dies from the shock of losing her brief freedom, not from joy, while the doctors misinterpret her death as death from joy","The irony that Richards tried to protect Louise from shock but caused it by bringing incorrect news","The irony that the railroad disaster killed many but spared Brently Mallard entirely"],
+   ans:1, expl:"The situational irony is that the doctors say Louise died of 'joy that kills,' but the reader knows she died from the shock and despair of losing her brief taste of freedom."},
+  {id:44,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"Why is Louise Mallard considered a 'round character' in the story?",
+   opts:["Because she is physically described in great detail throughout the narrative","Because she shows mixed emotions, her feelings change, she has inner conflict, and we see her inner thoughts","Because she appears in every scene and drives the entire plot forward","Because she is based on a real historical figure from 19th-century American society"],
+   ans:1, expl:"Louise is a round character because: she shows mixed emotions, her feelings change (grief to freedom), she has inner conflict, and we see her inner thoughts including whispering 'Free, free, free!'"},
+  {id:45,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"What does the repetition of 'Free, free, free!' in 'The Story of an Hour' convey?",
+   opts:["Louise's fear and terror about life alone after her husband's death","The overwhelming feeling of liberation and the intensity of her emotional transformation","Her grief and guilt for feeling happy about her husband's passing","Her delirium caused by the physical and emotional exhaustion of her grief"],
+   ans:1, expl:"The repetition of 'free' emphasizes Louise's overwhelming feeling of liberation after realizing her husband has died. It shows the intensity of her emotional transformation."},
+  {id:46,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"What is the main internal conflict in 'The Story of an Hour'?",
+   opts:["Louise's conflict with Josephine over whether to open the bedroom door","Louise's psychological struggle between sadness and grief on one hand, and relief and freedom on the other","Louise's conflict with society about the proper way to mourn a husband","Louise's internal debate about whether to stay in the house or leave for a new life"],
+   ans:1, expl:"The main internal conflict is Louise Mallard vs. Herself: she experiences a psychological struggle — feeling sadness and grief, then beginning to feel relief and freedom."},
+  {id:47,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"What external conflict does 'The Story of an Hour' imply?",
+   opts:["A direct argument between Louise Mallard and Brently Mallard about marriage","A conflict between Josephine and Richards over how to handle Louise's grief","Louise Mallard vs. Society and Marriage, suggesting that marriage limited women's freedom","A conflict between Louise and the medical establishment about her heart condition"],
+   ans:2, expl:"The implied external conflict is Louise Mallard vs. Society/Marriage. The story suggests that marriage and social expectations limit women's freedom."},
+  {id:48,cat:"Story of an Hour",diff:"easy",type:"mcq",
+   q:"What is the main theme of 'The Story of an Hour'?",
+   opts:["The inevitability of death and the importance of cherishing life","A woman's desire for personal freedom and independence from marital constraints","The dangers of emotional repression in Victorian society","The unreliability of news and the consequences of false information"],
+   ans:1, expl:"The most important theme is a woman's desire for personal freedom. After hearing about her husband's death, Louise realizes she can live for herself and make her own decisions."},
+  {id:49,cat:"Story of an Hour",diff:"hard",type:"mcq",
+   q:"What is the narrative point of view in 'The Story of an Hour' and what makes it 'selective'?",
+   opts:["First person, because Louise narrates her own feelings directly","Third-person omniscient, but selective because it focuses primarily on Louise's internal thoughts while keeping the thoughts of other characters hidden","Second person, because the reader is directly addressed by the narrator","Third-person objective, because the narrator only describes external events without any access to inner thoughts"],
+   ans:1, expl:"The story uses a sophisticated Third-Person Omniscient POV, 'selective' or 'limited' in how it focuses on Louise Mallard, giving access to her internal thoughts while keeping others' thoughts hidden."},
+  {id:50,cat:"Story of an Hour",diff:"hard",type:"mcq",
+   q:"How does the point of view create 'dramatic irony' in 'The Story of an Hour'?",
+   opts:["By revealing Josephine's secret knowledge that Brently was alive all along","By giving the reader access to Louise's true feelings of joy, creating a gap between what the reader knows and what characters like Josephine and Richards understand","By showing Brently's thoughts as he returns home, unaware of what has happened","By narrating the doctors' private conversations that Louise cannot hear"],
+   ans:1, expl:"Because the narrator knows Louise's true feelings (joy at being 'free'), but other characters do not, a massive gap of understanding is created — the essence of dramatic irony."},
+  {id:51,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"What does Springtime and nature symbolize in 'The Story of an Hour'?",
+   opts:["The passage of time and Louise's aging alongside her marriage","Renewal, hope, and new beginnings — mirroring Louise's emotional awakening and sense of liberation","The indifference of the natural world to human suffering and loss","The contrast between the outside world and Louise's confined domestic life"],
+   ans:1, expl:"Springtime/Nature symbolizes renewal, hope, and new beginnings. It mirrors Louise's emotional awakening and sense of liberation."},
+  {id:52,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"What does the metaphor 'drink from the elixir of life' mean in 'The Story of an Hour'?",
+   opts:["Louise literally drinks a medicinal potion prescribed by her doctor","Louise gains renewal, vitality, and ultimate happiness — the open window provides her with life-giving freedom","Louise is being poisoned by her oppressive marriage and restrictive society","Louise's grief is so intense that it feels like a physical illness requiring treatment"],
+   ans:1, expl:"The elixir of life metaphor means gaining renewal, immortality, or ultimate vitality — achieving something that gives enduring happiness, wisdom, or fulfillment. The open window is her source of this life."},
+  {id:53,cat:"Story of an Hour",diff:"easy",type:"tf",
+   q:"True or False: Kate Chopin's 'The Story of an Hour' is considered an early feminist text because it explores women's psychological oppression in the 19th century.",
+   opts:["True","False"],ans:0,
+   expl:"Many critics consider the story an early feminist text because it shows the psychological oppression of women in the 19th century."},
+  {id:54,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"Which type of imagery is illustrated by 'The tops of trees that were all aquiver with the new spring life'?",
+   opts:["Olfactory imagery (smell)","Auditory imagery (sound)","Visual and motion imagery (sight and movement)","Tactile imagery (touch)"],
+   ans:2, expl:"This example combines visual imagery (seeing the trees) and motion imagery (the trees being 'aquiver'). The material categorizes it under both visual and motion imagery."},
+  {id:55,cat:"Story of an Hour",diff:"medium",type:"mcq",
+   q:"What does 'The delicious breath of rain was in the air' represent in 'The Story of an Hour'?",
+   opts:["Visual imagery describing the rainy landscape outside Louise's window","Olfactory imagery appealing to the sense of smell and reinforcing Louise's sense of renewal","Auditory imagery describing the sound of rainfall in the street below","Gustatory imagery comparing the smell of rain to a delicious taste"],
+   ans:1, expl:"This is an example of olfactory imagery (smell). It appeals to the reader's sense of smell and reinforces the atmosphere of renewal surrounding Louise."},
+
+  // ── CATEGORY 4: Hilary's Aunt (Q56-70) ──
+  {id:56,cat:"Hilary's Aunt",diff:"easy",type:"mcq",
+   q:"Who is the author of 'Hilary's Aunt' and what is his real name?",
+   opts:["Kate Chopin, an American feminist writer","Cyril Hare, whose real name was Alfred Alexander Gordon Clark","O. Henry, an American short story writer known for surprise endings","Gustav Freytag, a German playwright and literary theorist"],
+   ans:1, expl:"Cyril Hare (pseudonym of Alfred Alexander Gordon Clark) wrote 'Hilary's Aunt.' He was known for writing clever detective stories."},
+  {id:57,cat:"Hilary's Aunt",diff:"easy",type:"mcq",
+   q:"Why was Hilary sent off to Australia by his father?",
+   opts:["He had insulted a member of the nobility and disgraced the family","He had trouble with the bank about some cheques, which his father considered a serious matter","He wanted to explore new business opportunities in the colonies","He had failed to marry a person of appropriate social standing"],
+   ans:1, expl:"Hilary had some unimportant trouble with the bank about a few cheques. His father was deeply offended and sent him off to Australia without delay."},
+  {id:58,cat:"Hilary's Aunt",diff:"medium",type:"mcq",
+   q:"How did Hilary eventually receive money after returning to England?",
+   opts:["He found a successful business venture upon returning from Australia","His aunt gave him an advance on his future inheritance","His father and brother died at the same time, leaving him all the family money","He convinced his aunt's lawyer to release funds from a family trust"],
+   ans:2, expl:"Hilary waited until his father and his brother died. They fortunately did this at the same time. After that he received all the money which belonged to the good old family."},
+  {id:59,cat:"Hilary's Aunt",diff:"medium",type:"mcq",
+   q:"Why had Hilary's father disapproved of Aunt Mary in the story?",
+   opts:["She had moved to Australia and disgraced the family by living abroad","She had failed to marry a nobleman and instead chose a husband connected with 'trade'","She had spent all the family inheritance on charitable causes","She had converted to a different religion against the family's traditional beliefs"],
+   ans:1, expl:"Aunt Mary had failed to marry a nobleman. Instead, she had chosen a husband who was connected with 'trade.' No old family could bear that sort of thing."},
+  {id:60,cat:"Hilary's Aunt",diff:"easy",type:"tf",
+   q:"True or False: When Hilary learned his aunt had a terminal illness, he felt genuine sadness and compassion for her suffering.",
+   opts:["True","False"],ans:1,
+   expl:"When Hilary learned of his aunt's terminal illness, he felt annoyed that 'Fate had found a home for him, and was now going to throw him out of it.' His concern was financial, not compassionate."},
+  {id:61,cat:"Hilary's Aunt",diff:"medium",type:"mcq",
+   q:"What did Hilary discover at the public library about his aunt's legal situation?",
+   opts:["That his aunt had secretly changed her will to leave everything to charity","When a woman marries, an earlier will loses its value, and if no new will is made, money goes to the nearest relation","That his aunt was legally required to make a new will every ten years","That Australian law would allow him to contest his aunt's will regardless of its content"],
+   ans:1, expl:"He read that when a woman marries, an earlier will loses its value; a new will must be made. If no new will is made, the money goes to the nearest relation. Hilary knew he was his aunt's only relation."},
+  {id:62,cat:"Hilary's Aunt",diff:"hard",type:"mcq",
+   q:"What is the climax/twist in 'Hilary's Aunt'?",
+   opts:["Hilary successfully administers the overdose and inherits his aunt's estate","The aunt reveals she has already changed her will to benefit a religious organization","The aunt reveals she is fully aware of Hilary's murderous plan and has deliberately ensured he will receive nothing if she dies that night","The lawyer arrives unexpectedly and witnesses Hilary's attempt to poison his aunt"],
+   ans:2, expl:"The climax/twist occurs when the aunt reveals she knows about Hilary's plan and explains that if she dies that night, he'll get nothing — some people in China will get the money."},
+  {id:63,cat:"Hilary's Aunt",diff:"hard",type:"mcq",
+   q:"What shocking revelation does the aunt make at the end of the story?",
+   opts:["That she had already secretly transferred all her assets to an overseas account","That John Prothero (her 'husband') had already had a wife and could never legally marry her, making her not truly married","That Hilary was not actually a blood relative and had no legal claim to any inheritance","That the original will had been legally invalidated and a new will had already been signed"],
+   ans:1, expl:"The aunt reveals: 'John Prothero never married me. He already had a wife and couldn't marry me again.' This means she was never legally married, which changes the inheritance laws entirely."},
+  {id:64,cat:"Hilary's Aunt",diff:"medium",type:"mcq",
+   q:"What type of irony is central to the conclusion of 'Hilary's Aunt'?",
+   opts:["Verbal irony, because the aunt says things she does not truly mean","Dramatic irony, because the reader knows about the overdose but the aunt does not","Situational irony, because Hilary planned to kill his aunt to inherit money, but she dies having already ensured he gets nothing","Cosmic irony, because fate intervenes to punish Hilary for his immoral intentions"],
+   ans:2, expl:"Situational Irony: Hilary planned to get rid of his aunt before she could change her will. The irony occurs when his aunt discovers his plan and explains that if she died that night, he would inherit nothing."},
+  {id:65,cat:"Hilary's Aunt",diff:"medium",type:"mcq",
+   q:"The simile 'He felt like a sailor who had just reached harbour' describes which moment in Hilary's life?",
+   opts:["When he finally returns to England after his time in Australia","When he moves into his aunt's comfortable house, feeling safe and financially secure after his poverty","When he successfully convinces his aunt to include him in her will","When he learns that his father and brother have died and left him their fortune"],
+   ans:1, expl:"Hilary was very relieved when he was able to move into his aunt's house. He felt like a sailor who had just reached harbour — without money he resembled a sailor in a storm who became safe after reaching harbour."},
+  {id:66,cat:"Hilary's Aunt",diff:"medium",type:"mcq",
+   q:"The metaphor 'Hilary's sun shone again' refers to what situation?",
+   opts:["The improvement in Hilary's physical health after the difficulties in Australia","The financial security Hilary found living in his aunt's house — money resembling the sun that brightens his life","The favorable weather in England compared to his experience in Australia","Hilary's renewed hope after finding out his aunt had remembered him in her will"],
+   ans:1, expl:"'Hilary's sun shone again' means without money he lives in darkness, but with the financial security his life becomes bright. Money resembles the sun that shines and enlightens his life."},
+  {id:67,cat:"Hilary's Aunt",diff:"medium",type:"mcq",
+   q:"What literary genre does 'Hilary's Aunt' belong to?",
+   opts:["Romantic fiction focusing on love and social class","Feminist literature examining women's independence in marriage","Classic British crime/mystery genre with intricate plot and legal elements","Pastoral fiction depicting idealized rural English life"],
+   ans:2, expl:"'Hilary's Aunt' falls into the classic British crime/mystery genre. Cyril Hare was known for writing clever detective stories with intricate plots, usually involving legal or procedural elements."},
+  {id:68,cat:"Hilary's Aunt",diff:"hard",type:"mcq",
+   q:"Why is the setting of 'Hilary's Aunt' in mid-20th century England especially significant to the plot?",
+   opts:["Because English literature was at its peak during this period, providing cultural context","Because euthanasia was strictly illegal and punishable by death at that time, making Hilary risk not just prison but his life","Because the story explores the social transformation of England after World War II","Because this period saw major changes in inheritance law that directly affect the plot's resolution"],
+   ans:1, expl:"At this time, euthanasia was strictly illegal and viewed as murder, punishable by death (capital punishment was not abolished in the UK until 1965). This creates high-stakes tension — Hilary risks his life, not just prison."},
+  {id:69,cat:"Hilary's Aunt",diff:"medium",type:"mcq",
+   q:"Why is the narrative point of view of 'Hilary's Aunt' described as 'third-person limited'?",
+   opts:["Because the narrator only describes events at a distance without entering any character's thoughts","Because we are privy to Hilary's thoughts and justifications but the narrator does not enter the aunt's, doctor's, or servants' minds","Because the story is told from multiple characters' perspectives alternately","Because Hilary narrates his own story using 'I' throughout the text"],
+   ans:1, expl:"The story is told from a third-person perspective, limited to Hilary. The narrator does not enter the minds of the Aunt, the doctor, or the servants — a strategic choice so the final twist is not ruined."},
+  {id:70,cat:"Hilary's Aunt",diff:"hard",type:"mcq",
+   q:"The personification 'Australia did not like Hilary' and 'Fate has found a home for him' serve what purpose in the story?",
+   opts:["To describe the literal geographical and legal conditions Hilary faced in Australia","To give human qualities to abstract forces, showing how Hilary perceives external circumstances as if they were personal relationships","To demonstrate Hilary's delusional mental state caused by financial desperation","To create a humorous contrast between Hilary's self-importance and his actual insignificance"],
+   ans:1, expl:"These personifications give human qualities to abstract forces (Australia, Fate), showing how Hilary perceives external circumstances as if they were personal relationships with him."},
+
+  // ── CATEGORY 5: Poetry Elements & Poems (Q71-100) ──
+  {id:71,cat:"Poetry & Literary Terms",diff:"easy",type:"mcq",
+   q:"According to the material, what makes poetry distinct as a literary form?",
+   opts:["Poetry always rhymes and uses a fixed number of lines per stanza","Poetry incorporates rhyme, figurative language, sound devices, and meter to evoke a wide array of meanings","Poetry deals exclusively with emotional subjects like love, loss, and nature","Poetry is always shorter than prose and uses simple, accessible language"],
+   ans:1, expl:"Poetry is a literary form that incorporates rhyme, figurative language, sound devices, and meter in order to evoke a wide array of meanings."},
+  {id:72,cat:"Poetry & Literary Terms",diff:"easy",type:"mcq",
+   q:"What is the difference between 'Tone' and 'Mood' in poetry?",
+   opts:["Tone is the overall subject of the poem while mood is the specific emotion in each stanza","Tone is the speaker's attitude toward the subject, while mood is the feeling the poem creates in the reader","Tone refers to the sound devices used while mood refers to the theme of the poem","Tone and mood are synonyms that describe the same emotional quality of a poem"],
+   ans:1, expl:"Tone = the speaker's attitude toward the subject. Mood = the feeling the poem creates in the reader."},
+  {id:73,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"In Wordsworth's 'I Wandered Lonely as a Cloud,' what is the main theme?",
+   opts:["The loneliness and isolation that modern humans feel in nature","The healing and joyful power of nature, whose memories bring happiness and peace to the mind","The superiority of rural life over urban civilization","The passing of time and the poet's longing for his lost youth"],
+   ans:1, expl:"The theme of Wordsworth's poem is the healing and joyful power of nature. Wordsworth shows that memories of nature can bring happiness and peace to the human mind."},
+  {id:74,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is the theme of Emily Dickinson's 'Because I Could Not Stop for Death'?",
+   opts:["The terror and horror of dying and the unknown afterlife","The anger and resistance of the human spirit against mortality","The inevitability of death, presented as a calm and natural journey","The grief and mourning of those left behind after a loved one's passing"],
+   ans:2, expl:"The theme is the inevitability of death. Dickinson presents death as a calm and natural journey rather than something frightening."},
+  {id:75,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"In 'Sonnet 18' by Shakespeare, what is the central theme?",
+   opts:["The destructive power of time on physical beauty and youth","The power of love and beauty to live forever through the immortality of poetry","The conflict between the natural world and human civilization","The speaker's jealousy and fear of losing his beloved to another suitor"],
+   ans:1, expl:"The theme is the power of love and beauty to live forever through poetry. Shakespeare suggests that even when beauty fades, the beloved's beauty will remain immortal in the poem."},
+  {id:76,cat:"Poetry & Literary Terms",diff:"easy",type:"mcq",
+   q:"In 'The Road Not Taken' by Robert Frost, who is the speaker and what is he doing?",
+   opts:["A soldier reflecting on battles he chose to fight or avoid","A traveler reflecting on a choice in life, speaking to the reader about a past decision","A teacher addressing students about the importance of academic choices","A poet speaking directly to another poet about the artistic choices they made"],
+   ans:1, expl:"The speaker is a traveler reflecting on a choice in life. He seems to be speaking to the reader or thinking aloud about his past decision at a fork in the road."},
+  {id:77,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What tone does W. H. Auden's 'Funeral Blues' convey?",
+   opts:["Hopeful and optimistic despite the sadness of death","Angry and bitter toward the people responsible for the death","Mournful and sorrowful — the speaker grieves deeply for a lost loved one","Ironic and satirical, mocking the social rituals surrounding death"],
+   ans:2, expl:"The tone of 'Funeral Blues' is mournful and sorrowful. The speaker is grieving deeply for a loved one who has died."},
+  {id:78,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"In 'The Chimney Sweeper' by William Blake, what makes the tone 'ironic and critical'?",
+   opts:["The poem celebrates the noble work of chimney sweepers in 18th century London","Although the child seems happy, the poet actually criticizes society for allowing children to suffer while pretending everything is fine","The speaker uses sarcastic praise to honor society's treatment of working-class children","The poem uses complex metaphors that ironically describe simple truths about childhood"],
+   ans:1, expl:"Although the child seems happy and dances and sings, the poet actually criticizes society for allowing children to suffer while pretending everything is fine."},
+  {id:79,cat:"Poetry & Literary Terms",diff:"easy",type:"mcq",
+   q:"What is 'Visual Imagery' in poetry?",
+   opts:["Words that describe sounds heard by the speaker or characters","Descriptive language that helps the reader see a mental picture of the scene","Language that appeals to the reader's sense of smell","Emotional language that makes the reader feel a specific mood"],
+   ans:1, expl:"Visual Imagery uses descriptive language that helps the reader see a clear mental picture. Example: 'A host of golden daffodils' from Wordsworth."},
+  {id:80,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What type of imagery is illustrated by 'The notes of a distant song which some one was singing reached her faintly'?",
+   opts:["Olfactory imagery","Visual imagery","Auditory imagery","Tactile imagery"],
+   ans:2, expl:"This is auditory imagery (sound) — the notes of a distant song appeal to the reader's sense of hearing."},
+  {id:81,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"In 'Stopping by Woods on a Snowy Evening' by Robert Frost, what type of imagery does 'downy flake' create?",
+   opts:["Visual imagery, helping the reader picture the falling snow","Auditory imagery, describing the sound of snow falling","Tactile imagery, suggesting the soft feeling of snowflakes touching the skin","Olfactory imagery, evoking the fresh scent of winter snow"],
+   ans:2, expl:"'Downy flake' is tactile imagery. The word 'downy' (soft like feathers) helps the reader imagine the gentle, soft touch of falling snow, appealing to the sense of touch."},
+  {id:82,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is the definition of Alliteration?",
+   opts:["The repetition of vowel sounds in nearby words","The repetition of the same ending sounds at the end of lines","The repetition of initial consonant sounds in nearby words","The substitution of a mild word for a harsh one"],
+   ans:2, expl:"Alliteration is the repetition of initial consonant sounds in nearby words. Example: 'Peter Piper picked a peck of pickled peppers.'"},
+  {id:83,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"How does Assonance differ from Rhyme?",
+   opts:["Assonance occurs at the beginning of words while rhyme occurs at the end","In rhyme there is a similarity of both vowel and consonant sounds, while assonance is a similarity of vowel sounds only","Assonance is used only in poetry while rhyme can be used in prose as well","Rhyme involves repetition of full words while assonance repeats only partial sounds"],
+   ans:1, expl:"Rhyme is a similarity of vowel and consonant: 'lake' and 'fake' rhyme. Assonance is repetition of vowel sounds: 'lake' and 'fate' demonstrate assonance (the 'ai' sound)."},
+  {id:84,cat:"Poetry & Literary Terms",diff:"easy",type:"mcq",
+   q:"What is Onomatopoeia?",
+   opts:["A figure of speech comparing two unlike things using 'like' or 'as'","Words that imitate natural sounds — e.g., 'buzz,' 'cuckoo,' 'tick'","The use of an object to represent an abstract idea","The repetition of consonant sounds at the end of words in nearby lines"],
+   ans:1, expl:"Onomatopoeia is the use of words that imitate natural sounds. Examples: buzz, cuckoo, tick — words whose meaning is suggested by the sound itself."},
+  {id:85,cat:"Poetry & Literary Terms",diff:"hard",type:"mcq",
+   q:"What is the pattern of syllables in an 'Iambic' foot and a 'Trochaic' foot respectively?",
+   opts:["Iambic = stressed/unstressed; Trochaic = unstressed/stressed","Iambic = unstressed/stressed; Trochaic = stressed/unstressed","Iambic = unstressed/unstressed/stressed; Trochaic = stressed/unstressed/unstressed","Iambic = stressed/stressed; Trochaic = unstressed/unstressed"],
+   ans:1, expl:"Iambic foot = unstressed / stressed (U /). Trochaic foot = stressed / unstressed (/ U)."},
+  {id:86,cat:"Poetry & Literary Terms",diff:"hard",type:"mcq",
+   q:"A line of poetry with five metrical feet is called what?",
+   opts:["Tetrameter","Hexameter","Pentameter","Trimeter"],
+   ans:2, expl:"Pentameter = five foot line. The most common English meter is iambic pentameter, with five iambs or iambic feet."},
+  {id:87,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is the rhyme scheme of the following stanza? 'Twinkle, twinkle, little star / How I wonder what you are / Up above the world so high / Like a diamond in the sky'",
+   opts:["ABAB","ABBA","AABB","ABCD"],
+   ans:2, expl:"Star/are rhyme (A) and high/sky rhyme (B) giving AABB rhyme scheme."},
+  {id:88,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is Enjambment in poetry?",
+   opts:["A complete pause at the end of a line of poetry marked by punctuation","When a sentence 'steps over' a line break into the next line without pause","The repetition of a key phrase at the beginning of successive lines","A group of lines in a poem separated by blank space"],
+   ans:1, expl:"Enjambment is when a sentence 'steps over' a line break into the next line without pause. The opposite is end-stopped, where there is a complete pause at line end."},
+  {id:89,cat:"Poetry & Literary Terms",diff:"easy",type:"mcq",
+   q:"What is the effect of First Person point of view in poetry?",
+   opts:["It provides a detached observational perspective on events and characters","It gives a personal perspective, allowing the reader to experience the poem through the speaker's thoughts and feelings","It directly addresses the reader, creating immediacy and urgency","It provides an all-knowing perspective on multiple characters simultaneously"],
+   ans:1, expl:"First person uses 'I' or 'we.' Effect: gives a personal perspective; the reader experiences the poem through the speaker's thoughts and feelings."},
+  {id:90,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is Langston Hughes's poem 'Dreams' about, based on the imagery used?",
+   opts:["The importance of education and academic achievement for social progress","The necessity of holding onto dreams, for without them life becomes broken and barren","The celebration of African American culture and artistic expression","The contrast between childhood imagination and adult disillusionment"],
+   ans:1, expl:"'Dreams' uses metaphors: a 'broken-winged bird that cannot fly' and 'a barren field frozen with snow' to show that life without dreams becomes broken and barren."},
+  {id:91,cat:"Poetry & Literary Terms",diff:"hard",type:"mcq",
+   q:"Stephen Crane's poem 'War Is Kind' uses irony throughout. How does the poem's title relate to its actual content?",
+   opts:["The poem sincerely argues that war is kind because soldiers die for a noble cause","The phrase 'War is kind' is a direct statement of the poem's central theme","The title is ironic — the poem shows the brutal reality of war (corpses, mothers' grief) while sarcastically repeating 'War is kind' to criticize the glorification of war","The title refers to the kindness of comrades who support each other during wartime"],
+   ans:2, expl:"'War is Kind' uses irony throughout — repeating 'war is kind' while describing wild hands toward the sky, corpses, and mothers' grief, to criticize those who glorify war."},
+  {id:92,cat:"Poetry & Literary Terms",diff:"easy",type:"mcq",
+   q:"What is a Simile?",
+   opts:["A direct comparison without using connecting words","A figure of speech comparing two unlike things using 'like,' 'as,' 'than,' or 'similar to'","The use of an object to represent an abstract idea or concept","Giving human characteristics to non-human things or abstract concepts"],
+   ans:1, expl:"A simile is a figure of speech in which two seemingly unlike things are compared, made explicit by words such as: like, as, than, similar to, resembles, or seems."},
+  {id:93,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is the difference between a Metaphor and a Simile?",
+   opts:["Metaphors are used in poetry while similes are used only in prose","A metaphor makes a direct comparison while a simile makes comparison explicit using 'like' or 'as'","Metaphors always involve animals while similes compare abstract concepts","A simile is more formal than a metaphor and used in academic writing"],
+   ans:1, expl:"A metaphor makes a direct comparison without using 'like' or 'as' (e.g., 'Time is a thief'). A simile makes the comparison explicit using connecting words (e.g., 'My love is like a rose')."},
+  {id:94,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is Personification?",
+   opts:["A comparison between two unlike things using 'like' or 'as'","A figure of speech in which human qualities or characteristics are given to an animal, object, or concept","An exaggeration for emphasis or humorous effect","The use of an object to represent something beyond its literal meaning"],
+   ans:1, expl:"Personification is a figure of speech in which human qualities or characteristics are given to an animal, object, or concept. Example: 'The wind whispered.'"},
+  {id:95,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is a Sonnet according to the Glossary?",
+   opts:["A free verse poem with no fixed number of lines or rhyme scheme","A poem of 14 lines with a fixed form, either Petrarchan or Shakespearean","A narrative poem originally meant to be sung, usually about ordinary people","A poem of mourning for someone who has died"],
+   ans:1, expl:"A Sonnet is a poem of 14 lines with a fixed form. The Petrarchan sonnet has an octave (8 lines) and sestet (6 lines). The Shakespearean sonnet ends with a couplet and follows iambic pentameter."},
+  {id:96,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is the definition of a 'Ballad'?",
+   opts:["A long narrative poem about the deeds of a hero in a past era","A short, witty poem compressing meaning in the manner of an inscription","A narrative poem originally meant to be sung, generally about ordinary people with unusual adventures, with dialogue and repetition","A poem lamenting about the dead, expressing grief and mourning"],
+   ans:2, expl:"A Ballad is a narrative poem that was originally meant to be sung. Ballads are generally about ordinary people who have unusual adventures, with a single tragic incident as the central focus."},
+  {id:97,cat:"Poetry & Literary Terms",diff:"hard",type:"mcq",
+   q:"What is the difference between Denotation and Connotation?",
+   opts:["Denotation refers to poetic meaning while connotation refers to literal meaning","Denotation is the precise, literal meaning of a word without emotional associations, while connotation refers to the associations, images, or impressions a word carries beyond its literal meaning","Denotation applies only to poetry while connotation applies to prose","They are synonyms describing the two sides of a word's dictionary definition"],
+   ans:1, expl:"Denotation = the precise, literal meaning of a word, without emotional associations. Connotation = the associations, images, or impressions carried by a word, as opposed to its literal meaning."},
+  {id:98,cat:"Poetry & Literary Terms",diff:"medium",type:"mcq",
+   q:"What is an Oxymoron?",
+   opts:["A statement that seems self-contradictory but demonstrates a truth","A figure of speech in which two contradictory words or phrases are combined in a single expression","An elaborate comparison between two very dissimilar things","The repetition of similar sounds at the end of words in a rhyme"],
+   ans:1, expl:"Oxymoron is a figure of speech in which two contradictory words or phrases are combined in a single expression, giving the effect of a condensed paradox. Examples: 'wise fool,' 'cruel kindness.'"},
+  {id:99,cat:"Poetry & Literary Terms",diff:"hard",type:"mcq",
+   q:"What is Synecdoche as defined in the glossary?",
+   opts:["A figure of speech substituting the name of a related object for the subject","A figure of speech in which a part represents the whole or the whole represents a part","A comparison between two dissimilar things for the purpose of clarifying the less familiar","An exaggeration for emphasis or humorous effect in a poem"],
+   ans:1, expl:"Synecdoche is a figure of speech in which a part represents the whole or the whole represents a part. Example: 'Philadelphia won the baseball game' — Philadelphia represents the Phillies' baseball team."},
+  {id:100,cat:"Poetry & Literary Terms",diff:"hard",type:"mcq",
+   q:"What is the 'Anapestic' foot in poetry, and how does it differ from the 'Dactylic' foot?",
+   opts:["Anapestic = stressed/unstressed/unstressed; Dactylic = unstressed/stressed","Anapestic = unstressed/unstressed/stressed; Dactylic = stressed/unstressed/unstressed","Anapestic = unstressed/stressed; Dactylic = stressed/unstressed","They are identical in pattern, just used in different historical periods"],
+   ans:1, expl:"Anapestic foot = unstressed / unstressed / stressed (U U /). Dactylic foot = stressed / unstressed / unstressed (/ U U). They are mirror images of each other."},
+];
+
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+let state = {
+  mode: 'practice',
+  randomize: true,
+  subset: false,
+  questions: [],
+  current: 0,
+  answers: {},
+  score: 0,
+  startTime: null,
+  timerInterval: null,
+  timeLeft: 90,
+  totalElapsed: 0,
+  answered: false,
+};
+
+const CATS = [...new Set(ALL_QUESTIONS.map(q=>q.cat))];
+const CAT_COLORS = {
+  "Literary Criticism":"#c9a84c",
+  "Short Story Analysis":"#5ce07a",
+  "Story of an Hour":"#4a9eff",
+  "Hilary's Aunt":"#e05c5c",
+  "Poetry & Literary Terms":"#7c6aff"
+};
+
+// ══════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════
+function $(id){ return document.getElementById(id); }
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+function selectMode(mode, el){
+  state.mode = mode;
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function toggleOpt(el, key){
+  el.classList.toggle('active');
+  state[key] = el.classList.contains('active');
+}
+
+// ══════════════════════════════════════
+//  QUIZ LOGIC
+// ══════════════════════════════════════
+function startQuiz(){
+  let qs = [...ALL_QUESTIONS];
+  if(state.randomize) qs = qs.sort(()=>Math.random()-0.5);
+  if(state.subset) qs = qs.slice(0, 50);
+  state.questions = qs;
+  state.current = 0;
+  state.answers = {};
+  state.score = 0;
+  state.startTime = Date.now();
+  state.totalElapsed = 0;
+
+  buildSidebar();
+  showScreen('quiz-screen');
+  renderQuestion();
+  if(state.mode === 'exam') startTimer();
+  else $('timer-display').style.display = 'none';
+}
+
+function buildSidebar(){
+  // Mode badge
+  const mb = $('sidebar-mode-badge');
+  mb.className = 'sidebar-mode-badge ' + state.mode;
+  mb.textContent = state.mode.charAt(0).toUpperCase() + state.mode.slice(1);
+
+  // Category list
+  const cl = $('sidebar-cats-list');
+  cl.innerHTML = '';
+  CATS.forEach(cat => {
+    const div = document.createElement('div');
+    div.className = 'sidebar-cat-item';
+    div.id = 'cat-item-' + cat.replace(/\s+/g,'-');
+    div.innerHTML = `<span style="font-size:11px">${cat}</span><span class="cat-prog" id="cat-prog-${cat.replace(/\s+/g,'-')}">0/${state.questions.filter(q=>q.cat===cat).length}</span>`;
+    cl.appendChild(div);
+  });
+
+  // Nav dots
+  const ng = $('sidebar-nav-grid');
+  ng.innerHTML = '';
+  state.questions.forEach((q,i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot';
+    dot.id = 'nav-dot-' + i;
+    dot.textContent = i+1;
+    dot.onclick = () => goToQuestion(i);
+    ng.appendChild(dot);
+  });
+}
+
+function renderQuestion(){
+  const q = state.questions[state.current];
+  const total = state.questions.length;
+  const pct = Math.round((Object.keys(state.answers).length / total) * 100);
+
+  $('q-current').textContent = state.current + 1;
+  $('q-total').textContent = total;
+  $('prog-cat').textContent = q.cat;
+  $('prog-pct').textContent = pct + '%';
+  $('progress-fill').style.width = pct + '%';
+  $('sidebar-prog-pct').textContent = pct + '%';
+  $('sidebar-prog-fill').style.width = pct + '%';
+  $('score-display').textContent = state.score;
+
+  // Diff badge
+  const db = $('diff-badge');
+  db.textContent = q.diff.charAt(0).toUpperCase() + q.diff.slice(1);
+  db.className = 'diff-badge ' + q.diff;
+
+  // Type badge
+  $('type-badge').textContent = q.type === 'tf' ? 'True / False' : 'MCQ';
+
+  $('q-num-label').textContent = `Q${state.current+1} · ${q.cat}`;
+  $('question-text').textContent = q.q;
+
+  // Explanation (revision mode shows before answering)
+  const expl = $('explanation-box');
+  expl.classList.remove('visible');
+  if(state.mode === 'revision'){
+    $('explanation-text').textContent = q.expl;
+    expl.classList.add('visible');
+  }
+
+  // Options
+  const ol = $('options-list');
+  ol.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+
+    // If already answered
+    const saved = state.answers[state.current];
+    if(saved !== undefined){
+      btn.disabled = true;
+      if(i === q.ans) btn.classList.add('correct');
+      else if(i === saved && saved !== q.ans) btn.classList.add('wrong');
+    } else {
+      btn.onclick = () => selectAnswer(i);
+    }
+    ol.appendChild(btn);
+  });
+
+  // Prev/Next
+  $('btn-prev').disabled = state.current === 0;
+  $('btn-next').textContent = state.current === total-1 ? 'Finish →' : 'Next →';
+
+  // Update nav dots
+  document.querySelectorAll('.nav-dot').forEach((dot,i)=>{
+    dot.className = 'nav-dot';
+    if(i === state.current) dot.classList.add('current');
+    else if(state.answers[i] !== undefined){
+      if(state.answers[i] === state.questions[i].ans) dot.classList.add('answered-correct');
+      else dot.classList.add('answered-wrong');
+    }
+  });
+
+  // Update cat progress
+  CATS.forEach(cat => {
+    const catQs = state.questions.filter((q,i)=>q.cat===cat && state.answers[i]!==undefined);
+    const total = state.questions.filter(q=>q.cat===cat).length;
+    const el = $('cat-prog-' + cat.replace(/\s+/g,'-'));
+    if(el) el.textContent = catQs.length + '/' + total;
+  });
+
+  // Reset timer for exam mode
+  if(state.mode === 'exam'){
+    clearInterval(state.timerInterval);
+    state.timeLeft = 90;
+    updateTimerDisplay();
+    if(state.answers[state.current] === undefined) startTimer();
+  }
+
+  // Animate in
+  $('question-card').style.animation = 'none';
+  requestAnimationFrame(()=>{
+    $('question-card').style.animation = 'slide-in 0.4s cubic-bezier(0.4,0,0.2,1)';
+  });
+}
+
+function selectAnswer(idx){
+  if(state.answers[state.current] !== undefined) return;
+  const q = state.questions[state.current];
+  state.answers[state.current] = idx;
+  if(idx === q.ans) state.score++;
+
+  // Style buttons
+  const btns = $('options-list').querySelectorAll('.option-btn');
+  btns.forEach((btn,i)=>{
+    btn.disabled = true;
+    if(i === q.ans) btn.classList.add('correct');
+    else if(i === idx && idx !== q.ans) btn.classList.add('wrong');
+  });
+
+  // Show explanation in practice mode
+  if(state.mode === 'practice'){
+    $('explanation-text').textContent = q.expl;
+    $('explanation-box').classList.add('visible');
+  }
+
+  $('score-display').textContent = state.score;
+
+  // Update nav dot
+  const dot = $('nav-dot-' + state.current);
+  if(dot){
+    dot.className = 'nav-dot ' + (idx === q.ans ? 'answered-correct' : 'answered-wrong');
+    if(state.current === state.current) dot.classList.add('current');
+  }
+
+  // Update cat progress
+  CATS.forEach(cat => {
+    const catAnswered = state.questions.filter((q,i)=>q.cat===cat && state.answers[i]!==undefined).length;
+    const catTotal = state.questions.filter(q=>q.cat===cat).length;
+    const el = $('cat-prog-' + cat.replace(/\s+/g,'-'));
+    if(el) el.textContent = catAnswered + '/' + catTotal;
+  });
+
+  stopTimer();
+  saveProgress();
+}
+
+function nextQuestion(){
+  if(state.current >= state.questions.length-1){
+    finishQuiz();
+    return;
+  }
+  state.current++;
+  renderQuestion();
+}
+
+function prevQuestion(){
+  if(state.current > 0){
+    state.current--;
+    renderQuestion();
+  }
+}
+
+function skipQuestion(){
+  if(state.current < state.questions.length-1){
+    state.current++;
+    renderQuestion();
+  }
+}
+
+function goToQuestion(i){
+  state.current = i;
+  renderQuestion();
+  closeSidebar();
+}
+
+// ══════════════════════════════════════
+//  TIMER
+// ══════════════════════════════════════
+function startTimer(){
+  clearInterval(state.timerInterval);
+  $('timer-display').style.display = '';
+  state.timerInterval = setInterval(()=>{
+    state.timeLeft--;
+    updateTimerDisplay();
+    if(state.timeLeft <= 0){
+      stopTimer();
+      // Auto skip unanswered
+      if(state.answers[state.current] === undefined){
+        state.answers[state.current] = -1; // no answer
+        if(state.current < state.questions.length-1){
+          setTimeout(()=>{ state.current++; renderQuestion(); }, 800);
+        } else {
+          setTimeout(finishQuiz, 800);
+        }
+      }
+    }
+  }, 1000);
+}
+
+function stopTimer(){
+  clearInterval(state.timerInterval);
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(state.timeLeft/60);
+  const s = state.timeLeft % 60;
+  $('timer-text').textContent = m + ':' + String(s).padStart(2,'0');
+  const td = $('timer-display');
+  if(state.timeLeft <= 20) td.classList.add('warning');
+  else td.classList.remove('warning');
+}
+
+// ══════════════════════════════════════
+//  FINISH
+// ══════════════════════════════════════
+function finishQuiz(){
+  stopTimer();
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const total = state.questions.length;
+  const answered = Object.keys(state.answers).filter(k=>state.answers[k]!==-1).length;
+  const correct = state.score;
+  const wrong = answered - correct;
+  const pct = Math.round((correct / total) * 100);
+
+  // Result screen
+  $('stat-correct').textContent = correct;
+  $('stat-wrong').textContent = wrong;
+  $('stat-pct').textContent = pct + '%';
+  const min = Math.floor(elapsed/60);
+  const sec = elapsed % 60;
+  $('stat-time').textContent = min + 'm ' + sec + 's';
+  $('result-grade').textContent = pct + '%';
+
+  // Trophy & label
+  let trophy, label;
+  if(pct >= 95){ trophy='🏆'; label='Outstanding! You\'re a master of literary criticism.'; }
+  else if(pct >= 85){ trophy='🥇'; label='Excellent Performance! You have a strong command of the material.'; }
+  else if(pct >= 75){ trophy='🥈'; label='Very Good! A solid understanding of the content.'; }
+  else if(pct >= 60){ trophy='🥉'; label='Good Work! Review the topics you found challenging.'; }
+  else if(pct >= 50){ trophy='📚'; label='Passing. More revision is recommended.'; }
+  else { trophy='📖'; label='Keep Studying. Review the material and try again!'; }
+  $('result-trophy').textContent = trophy;
+  $('result-label').textContent = label;
+
+  // Cat breakdown
+  const cb = $('cat-breakdown');
+  cb.innerHTML = '';
+  CATS.forEach(cat => {
+    const catQs = state.questions.filter(q=>q.cat===cat);
+    const catCorrect = catQs.filter((q,i)=>{
+      const qi = state.questions.indexOf(q);
+      return state.answers[qi] === q.ans;
+    }).length;
+    const catPct = catQs.length ? Math.round((catCorrect/catQs.length)*100) : 0;
+    const color = CAT_COLORS[cat] || '#c9a84c';
+    cb.innerHTML += `<div class="cat-prog-item">
+      <div class="cat-prog-top"><span>${cat}</span><span>${catCorrect}/${catQs.length} (${catPct}%)</span></div>
+      <div class="cat-prog-bar-bg"><div class="cat-prog-bar-fill" style="width:${catPct}%;background:${color}"></div></div>
+    </div>`;
+  });
+
+  // Badges
+  const badgeEl = (id, cond) => { if(cond) $(id) && $(id).classList.add('earned'); };
+  badgeEl('badge-perfect', pct === 100);
+  badgeEl('badge-scholar', pct >= 80);
+  badgeEl('badge-speed', elapsed < 300 && pct >= 60);
+  badgeEl('badge-poet', (() => {
+    const poetQs = state.questions.filter(q=>q.cat==="Poetry & Literary Terms");
+    const pc = poetQs.filter((q)=>state.answers[state.questions.indexOf(q)]===q.ans).length;
+    return poetQs.length > 0 && pc/poetQs.length >= 0.8;
+  })());
+  badgeEl('badge-critic', (() => {
+    const cqs = state.questions.filter(q=>q.cat==="Literary Criticism");
+    const pc = cqs.filter(q=>state.answers[state.questions.indexOf(q)]===q.ans).length;
+    return cqs.length > 0 && pc/cqs.length >= 0.8;
+  })());
+  badgeEl('badge-persistent', answered === total);
+  badgeEl('badge-story', (() => {
+    const sq = state.questions.filter(q=>q.cat==="Story of an Hour"||q.cat==="Hilary's Aunt");
+    const sc = sq.filter(q=>state.answers[state.questions.indexOf(q)]===q.ans).length;
+    return sq.length > 0 && sc/sq.length >= 0.8;
+  })());
+  badgeEl('badge-theory', (() => {
+    const hq = state.questions.filter(q=>q.diff==="hard");
+    const hc = hq.filter(q=>state.answers[state.questions.indexOf(q)]===q.ans).length;
+    return hq.length >= 5 && hc/hq.length >= 0.7;
+  })());
+
+  // Eval
+  let evalText = '';
+  if(pct >= 90) evalText = `Exceptional mastery! You correctly answered ${correct} out of ${total} questions. You demonstrate deep understanding of literary criticism, short story analysis, poetry elements, and literary terms. Your analytical skills are at the highest academic level.`;
+  else if(pct >= 75) evalText = `Strong performance with ${correct}/${total} correct. You have a solid grasp of literary concepts. Review the questions you missed to achieve mastery. Focus on the areas where you scored lower based on the category breakdown above.`;
+  else if(pct >= 60) evalText = `Adequate understanding shown with ${correct}/${total} correct. You have foundational knowledge but some concepts need reinforcement. Pay special attention to the categories showing lower percentages in the breakdown above.`;
+  else evalText = `This quiz reveals areas that need significant review. You scored ${correct}/${total}. Return to the study material focusing on the categories with the lowest percentages. The Revision mode may help consolidate your understanding before retesting.`;
+  $('perf-eval-text').textContent = evalText;
+
+  saveProgress();
+  showScreen('result-screen');
+}
+
+function restartQuiz(){
+  document.querySelectorAll('.badge').forEach(b=>b.classList.remove('earned'));
+  startQuiz();
+}
+
+function reviewMistakes(){
+  const wrong = state.questions
+    .map((q,i) => state.answers[i] !== q.ans ? i : -1)
+    .filter(i => i !== -1);
+  if(wrong.length === 0){ alert('No mistakes to review! Perfect score!'); return; }
+  state.questions = wrong.map(i => state.questions[i]);
+  state.current = 0;
+  state.answers = {};
+  state.score = 0;
+  state.startTime = Date.now();
+  document.querySelectorAll('.badge').forEach(b=>b.classList.remove('earned'));
+  buildSidebar();
+  showScreen('quiz-screen');
+  renderQuestion();
+  if(state.mode === 'exam') startTimer();
+}
+
+function goHome(){
+  stopTimer();
+  showScreen('start-screen');
+}
+
+// ══════════════════════════════════════
+//  SIDEBAR TOGGLE (mobile)
+// ══════════════════════════════════════
+function toggleSidebar(){
+  $('sidebar').classList.toggle('open');
+  $('sidebar-overlay').classList.toggle('show');
+}
+function closeSidebar(){
+  $('sidebar').classList.remove('open');
+  $('sidebar-overlay').classList.remove('show');
+}
+
+// ══════════════════════════════════════
+//  LOCAL STORAGE
+// ══════════════════════════════════════
+function saveProgress(){
+  try {
+    const data = {
+      answers: state.answers,
+      score: state.score,
+      current: state.current,
+      mode: state.mode,
+      questionIds: state.questions.map(q=>q.id)
+    };
+    localStorage.setItem('quiz_progress', JSON.stringify(data));
+    const toast = $('save-toast');
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 2000);
+  } catch(e){}
+}
+
+function loadProgress(){
+  try {
+    const data = JSON.parse(localStorage.getItem('quiz_progress'));
+    if(data && data.questionIds){
+      const qs = data.questionIds.map(id => ALL_QUESTIONS.find(q=>q.id===id)).filter(Boolean);
+      if(qs.length > 0 && confirm('Continue your previous session?')){
+        state.questions = qs;
+        state.answers = data.answers || {};
+        state.score = data.score || 0;
+        state.current = data.current || 0;
+        state.mode = data.mode || 'practice';
+        state.startTime = Date.now();
+        buildSidebar();
+        showScreen('quiz-screen');
+        renderQuestion();
+        if(state.mode === 'exam') startTimer();
+        return true;
+      }
+    }
+  } catch(e){}
+  return false;
+}
+
+// ══════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ══════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if(!$('quiz-screen').classList.contains('active')) return;
+  const q = state.questions[state.current];
+  if(!q) return;
+  const key = e.key.toLowerCase();
+  if(['1','2','3','4'].includes(e.key)){
+    const idx = parseInt(e.key)-1;
+    if(idx < q.opts.length && state.answers[state.current]===undefined) selectAnswer(idx);
+  }
+  if(key === 't' && q.type==='tf' && state.answers[state.current]===undefined) selectAnswer(0);
+  if(key === 'f' && q.type==='tf' && state.answers[state.current]===undefined) selectAnswer(1);
+  if(e.key === 'ArrowRight') nextQuestion();
+  if(e.key === 'ArrowLeft') prevQuestion();
+});
+
+// Init
+window.addEventListener('load', () => {
+  loadProgress();
+});
+</script>
+</body>
+  </html>
